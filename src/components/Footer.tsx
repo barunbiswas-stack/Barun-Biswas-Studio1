@@ -1,8 +1,12 @@
 import React from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenContact?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
   const { isBengali, bi } = useLanguage();
 
   const scrollToTop = () => {
@@ -19,34 +23,46 @@ export const Footer: React.FC = () => {
               <span>BARUN BISWAS</span>
               <span className="text-[#d4ff00]">STUDIO</span>
             </div>
-            <p className="text-xs text-neutral-500 max-w-md">
-              {bi(
-                'Cinematic direction, commercial advertising, original sound design, and visual productions.',
-                'সিনেমাটিক পরিচালনা, বাণিজ্যিক ব্র্যান্ড বিজ্ঞাপন ও নান্দনিক ভিজ্যুয়াল প্রোডাকশন।'
-              )}
+            <p className="text-xs text-neutral-400 max-w-md">
+              {isBengali
+                ? 'AI Animation, Graphic Design, Video Ads, Music Video ও ভাইরাল AI Content তৈরির পেশাদার স্টুডিও।'
+                : 'Cinematic AI Animation, Graphic Design, Video Ads, Music Videos & Viral AI Content Studio.'}
             </p>
           </div>
 
-          {/* Back to top button */}
-          <button
-            onClick={scrollToTop}
-            className="flex items-center gap-2 px-4 py-2 rounded bg-white/5 border border-white/10 hover:border-[#d4ff00] hover:text-white transition-colors text-xs uppercase cursor-pointer"
-          >
-            <span>{isBengali ? 'উপরে ফিরুন' : 'BACK TO TOP'}</span>
-            <ArrowUp className="w-3.5 h-3.5 text-[#d4ff00]" />
-          </button>
+          {/* Action buttons */}
+          <div className="flex items-center gap-3">
+            {onOpenContact && (
+              <button
+                onClick={onOpenContact}
+                className="flex items-center gap-2 px-4 py-2 rounded bg-[#d4ff00] text-black font-display font-bold text-xs uppercase cursor-pointer hover:bg-white transition-colors"
+              >
+                <span>{isBengali ? 'কাজ শুরু করুন' : 'START A PROJECT'}</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+            )}
+
+            <button
+              onClick={scrollToTop}
+              className="flex items-center gap-2 px-4 py-2 rounded bg-white/5 border border-white/10 hover:border-[#d4ff00] hover:text-white transition-colors text-xs uppercase cursor-pointer"
+            >
+              <span>{isBengali ? 'উপরে ফিরুন' : 'BACK TO TOP'}</span>
+              <ArrowUp className="w-3.5 h-3.5 text-[#d4ff00]" />
+            </button>
+          </div>
         </div>
 
         {/* Bottom Tier */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
           <div>
-            © {new Date().getFullYear()} {bi('Barun Biswas. All rights reserved.', 'বরুণ বিশ্বাস। সর্বস্বত্ব সংরক্ষিত।')}
+            © {new Date().getFullYear()} {isBengali ? 'বরুণ বিশ্বাস। সর্বস্বত্ব সংরক্ষিত।' : 'Barun Biswas. All rights reserved.'}
           </div>
           <div className="flex items-center gap-6">
-            <a href="#work" className="hover:text-white transition-colors">{bi('WORK', 'কাজ')}</a>
-            <a href="#about" className="hover:text-white transition-colors">{bi('ABOUT', 'পরিচয়')}</a>
-            <a href="#services" className="hover:text-white transition-colors">{bi('SERVICES', 'সেবা')}</a>
-            <a href="#contact" className="hover:text-white transition-colors">{bi('CONTACT', 'যোগাযোগ')}</a>
+            <a href="#work" className="hover:text-white transition-colors">{isBengali ? 'কাজ' : 'WORK'}</a>
+            <a href="#services" className="hover:text-white transition-colors">{isBengali ? 'সেবা' : 'SERVICES'}</a>
+            <a href="#packages" className="hover:text-white transition-colors">{isBengali ? 'প্যাকেজ' : 'PACKAGES'}</a>
+            <a href="#about" className="hover:text-white transition-colors">{isBengali ? 'পরিচয়' : 'ABOUT'}</a>
+            <a href="#contact" className="hover:text-white transition-colors">{isBengali ? 'যোগাযোগ' : 'CONTACT'}</a>
           </div>
         </div>
       </div>

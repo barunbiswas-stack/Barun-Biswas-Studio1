@@ -1,115 +1,130 @@
 import React from 'react';
-import { User, Sparkles, Terminal, Code, Cpu, Film, Palette, Music, Check } from 'lucide-react';
+import { Sparkles, Check, CheckCircle2, Shield, Award, Terminal, Cpu } from 'lucide-react';
 import { TOOL_CATEGORIES } from '../data/portfolioData';
 import { useLanguage } from '../context/LanguageContext';
 
 export const AboutSection: React.FC = () => {
-  const { t, isBengali, isMixed, bi } = useLanguage();
+  const { isBengali, bi } = useLanguage();
 
   return (
-    <section id="about" className="py-24 border-b border-white/10 relative bg-[#09090c]">
+    <section id="about" className="py-20 sm:py-24 border-b border-white/10 relative bg-[#09090c]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-white/10 gap-6">
           <div>
             <div className="flex items-center gap-2 text-xs font-mono-tech uppercase tracking-widest text-[#d4ff00] mb-3">
               <span className="w-1.5 h-1.5 bg-[#d4ff00] rounded-full" />
-              <span>{t.about.label}</span>
+              <span>{isBengali ? 'পরিচয় ও দর্শন' : 'ABOUT & CREATIVE PHILOSOPHY'}</span>
             </div>
-            <h2 className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white tracking-tight uppercase leading-none">
-              {t.about.titleMain} <span className="text-[#ff007f]">{t.about.titleAccent}</span>
+            <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-tight uppercase leading-none">
+              {isBengali ? (
+                <>
+                  আমি <span className="text-[#d4ff00]">বরুণ বিশ্বাস</span>
+                </>
+              ) : (
+                <>
+                  ABOUT <span className="text-[#d4ff00]">BARUN BISWAS</span>
+                </>
+              )}
             </h2>
           </div>
           <div className="text-xs sm:text-sm font-mono-tech text-neutral-400 max-w-md">
-            {t.about.bioParagraph1}
+            {isBengali
+              ? 'আধুনিক এআই টুলস ও ক্রিয়েটিভ আর্টের মেলবন্ধনে ব্র্যান্ড, ইউটিউব চ্যানেল ও মিউজিক আর্টিস্টদের জন্য ভিজ্যুয়াল নির্মাণ করি।'
+              : 'Synthesizing cutting-edge AI neural systems with human artistic direction, storytelling, and high-impact commercial outcomes.'}
           </div>
         </div>
 
-        {/* Profile / Director Manifesto Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-20">
-          {/* Left: Director Avatar / Visual Plate */}
+        {/* Profile Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
+          {/* Left: Avatar & Quick Specs */}
           <div className="lg:col-span-4 space-y-4">
-            <div className="relative rounded-sm overflow-hidden border border-white/20 bg-neutral-950 aspect-[4/5] group">
+            <div className="relative rounded overflow-hidden border border-white/20 bg-neutral-950 aspect-[4/5] group">
               <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop"
-                alt="Creative Director Barun Biswas Portrait"
-                className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 opacity-80 group-hover:opacity-100"
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop"
+                alt="Barun Biswas"
+                className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 opacity-85 group-hover:opacity-100"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
 
-              <div className="absolute bottom-4 left-4 right-4 p-3 rounded-sm bg-black/85 backdrop-blur-md border border-white/10 font-mono-tech text-xs space-y-1">
+              <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded bg-black/85 backdrop-blur-md border border-white/10 font-mono-tech text-xs space-y-1">
                 <div className="flex items-center justify-between text-white font-bold">
-                  <span>{bi('BARUN BISWAS', 'বরুণ বিশ্বাস')}</span>
-                  <span className="text-[#d4ff00]">{bi('DIRECTOR', 'চলচ্চিত্র পরিচালক')}</span>
+                  <span>BARUN BISWAS</span>
+                  <span className="text-[#d4ff00]">CREATIVE SPECIALIST</span>
                 </div>
                 <div className="text-[11px] text-neutral-400">
-                  {bi('Concept • Direction • Narrative • Sound', 'ধারণা • পরিচালনা • ন্যারেটিভ • সঙ্গীত')}
+                  {isBengali ? 'AI Animation • Graphic Design • Video Ads • Music Video' : 'AI Animation • Graphic Design • Video Ads • Music Video'}
                 </div>
               </div>
             </div>
 
-            {/* Quick Director Specs */}
-            <div className="p-4 rounded-sm bg-neutral-950 border border-white/10 font-mono-tech text-xs space-y-2 text-neutral-400">
-              <div className="flex justify-between pb-1 border-b border-white/5">
-                <span>{bi('LOCATION:', 'অবস্থান:')}</span>
-                <span className="text-white">{bi('GLOBAL / REMOTE STUDIO', 'বিশ্বব্যাপী / রিমোট স্টুডিও')}</span>
+            {/* Quick Specs */}
+            <div className="p-4 rounded bg-neutral-950 border border-white/10 font-mono-tech text-xs space-y-2.5 text-neutral-400">
+              <div className="flex justify-between pb-1.5 border-b border-white/5">
+                <span>{isBengali ? 'কাজের ধরণ:' : 'WORK SCOPE:'}</span>
+                <span className="text-white">{isBengali ? 'রিমোট ও গ্লোবাল প্রজেক্ট' : 'Remote & Global Studio'}</span>
               </div>
-              <div className="flex justify-between pb-1 border-b border-white/5">
-                <span>{bi('SPECIALIZATION:', 'দক্ষতা:')}</span>
-                <span className="text-[#d4ff00]">{bi('FULL-PIPELINE CREATIVE DIRECTION', 'সম্পূর্ণ সিনেমাটিক সৃজনশীল পরিচালনা')}</span>
+              <div className="flex justify-between pb-1.5 border-b border-white/5">
+                <span>{isBengali ? 'মূল শক্তি:' : 'CORE STRENGTH:'}</span>
+                <span className="text-[#d4ff00] font-bold">{isBengali ? 'উচ্চ ভিজ্যুয়াল মান ও দ্রুত ডেলিভারি' : 'High Retention & Fast Turnaround'}</span>
               </div>
               <div className="flex justify-between">
-                <span>{bi('AVAILABILITY:', 'প্রাপ্যতা:')}</span>
-                <span className="text-white">{bi('OPEN FOR COMMISSIONS', 'নতুন কাজের জন্য প্রস্তুত')}</span>
+                <span>{isBengali ? 'ক্লায়েন্ট সন্তুষ্টি:' : 'SATISFACTION:'}</span>
+                <span className="text-white">১০০% গ্যারান্টিযুক্ত</span>
               </div>
             </div>
           </div>
 
-          {/* Right: Personal Creative Philosophy & Bio */}
+          {/* Right: Personal Statement & Approach */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="p-6 sm:p-8 rounded-sm bg-neutral-950 border border-white/15 space-y-6">
-              <div className="text-xs font-mono-tech uppercase tracking-widest text-[#ff007f] font-bold">
-                {bi("DIRECTOR'S STATEMENT & APPROACH", 'পরিচালকের দৃষ্টিভঙ্গি ও মূলনীতি')}
+            <div className="p-6 sm:p-8 rounded bg-neutral-950 border border-white/15 space-y-6">
+              <div className="text-xs font-mono-tech uppercase tracking-widest text-[#d4ff00] font-bold">
+                {isBengali ? 'আমার কাজের দর্শন ও দৃষ্টিভঙ্গি' : 'CREATIVE MANIFESTO'}
               </div>
 
-              <blockquote className="font-display font-black text-xl sm:text-2xl md:text-3xl text-white tracking-tight uppercase leading-snug border-l-4 border-[#d4ff00] pl-6">
-                {isMixed
-                  ? '“I explore where human emotion, narrative storytelling, and digital synthesis meet. // আবেগ, গল্প ও প্রযুক্তির সমন্বয় — সৃজনশীল নান্দনিকতা ও চলচ্চিত্রের প্রাণ মানুষের হাতের স্পর্শেই জন্ম নেয়।”'
-                  : isBengali
-                  ? '“আবেগ, গল্প ও প্রযুক্তির মেলবন্ধন — প্রযুক্তি কল্পনার সীমানা বৃদ্ধি করে, তবে শৈল্পিক স্বাদ এবং চলচ্চিত্রের প্রাণ সম্পূর্ণ মানুষের হাতের স্পর্শেই জীবন্ত হয়।”'
-                  : '“I explore the convergence where human emotion, narrative storytelling, and digital synthesis meet. Technology expands what can be envisioned, but the artistic taste, narrative soul, and final master are directed entirely by human hands.”'}
+              <blockquote className="font-display font-black text-xl sm:text-2xl text-white tracking-tight uppercase leading-snug border-l-4 border-[#d4ff00] pl-5">
+                {isBengali
+                  ? '“প্রযুক্তি যত উন্নতই হোক, আসল গল্প আর মানুষের মনে দাগ কাটার অনুভূতি সম্পূর্ণ নির্ভর করে শৈল্পিক স্পর্শের ওপর।”'
+                  : '“Technology expands what can be envisioned, but narrative emotion, pacing, and customer conversion are crafted through human mastery.”'}
               </blockquote>
 
-              <div className="space-y-4 text-xs sm:text-sm font-mono-tech text-neutral-300 leading-relaxed pt-2">
+              <div className="space-y-3 text-xs sm:text-sm font-mono-tech text-neutral-300 leading-relaxed">
                 <p>
-                  {t.about.bioParagraph2}
+                  {isBengali
+                    ? 'আমি বিশ্বাস করি, একটি নিখুঁত বিজ্ঞাপন বা ভিডিও শুধু দেখতে ভালো হলেই চলে না — তা দর্শককে প্রথম ৩ সেকেন্ডে আটকে রাখতে পারে এবং ব্র্যান্ডের প্রতি গভীর বিশ্বাস তৈরি করে।'
+                    : 'A truly successful video ad or AI animation does not just look polished — it grips attention within the first three seconds and drives real commercial results.'}
+                </p>
+                <p>
+                  {isBengali
+                    ? 'আমি প্রতিটি প্রজেক্টে এআই-এর সীমাহীন সম্ভাবনাকে আমার নিজস্ব গ্রাফিক ডিজাইন সেন্স, সিনেমাটোগ্রাফি জ্ঞান ও সাউন্ড ডিজাইনের সাথে একীভূত করি। ফলে তৈরি হয় এমন এক ভিজ্যুয়াল আউটপুট যা আপনার প্রতিযোগীদের চেয়ে আপনাকে অনেক ধাপ এগিয়ে রাখবে।'
+                    : 'Whether crafting viral 3D AI animation, high-converting product commercials, or beat-synced music videos, I ensure your assets surpass standard industry benchmarks.'}
                 </p>
               </div>
 
-              {/* Core Pillars */}
+              {/* 3 Pillars */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10">
-                <div className="space-y-1">
-                  <span className="text-xs font-mono-tech text-[#d4ff00] font-bold">
-                    {bi('01. NARRATIVE VISION', '০১. গল্পের গভীরতা')}
+                <div className="p-3.5 rounded bg-white/[0.02] border border-white/5 space-y-1">
+                  <span className="text-xs font-mono-tech text-[#d4ff00] font-bold block">
+                    ০১. {isBengali ? 'স্ক্রোল-স্টপিং হুক' : 'SCROLL-STOPPING HOOK'}
                   </span>
                   <p className="text-[11px] font-mono-tech text-neutral-400">
-                    {bi('Emotional core and story arc are crystal clear before any visual exploration begins.', 'গল্পের গভীর আবেগ এবং মূল চরিত্র স্পষ্ট না হওয়া পর্যন্ত কোনো দৃশ্য নির্মাণ শুরু হয় না।')}
+                    {isBengali ? 'দর্শকের চোখ আটকে রেখে সম্পূর্ণ বার্তা পৌঁছানোর কৌশল।' : 'Hooking retention from frame zero.'}
                   </p>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-xs font-mono-tech text-[#ff007f] font-bold">
-                    {bi('02. EDITORIAL TASTE', '০২. শৈল্পিক রুচি')}
+                <div className="p-3.5 rounded bg-white/[0.02] border border-white/5 space-y-1">
+                  <span className="text-xs font-mono-tech text-[#ff007f] font-bold block">
+                    ০২. {isBengali ? 'নিখুঁত কালার ও সাউন্ড' : 'COLOR & AUDIO SYNC'}
                   </span>
                   <p className="text-[11px] font-mono-tech text-neutral-400">
-                    {bi('Every cut, color grade, and audio transient is shaped, timed, and mastered by human hands.', 'প্রতিটি ফ্রেম, রঙের বিন্যাস এবং শব্দের ওঠানামা মানুষের সতর্ক পরিচালনায় নিখুঁত করা হয়।')}
+                    {isBengali ? 'সিনেমাটিক রঙের ভারসাম্য ও কানে লেগে থাকার মতো সাউন্ড।' : 'Tactile foley & tailored musical beats.'}
                   </p>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-xs font-mono-tech text-white font-bold">
-                    {bi('03. CULTURAL IMPACT', '০৩. সাংস্কৃতিক প্রভাব')}
+                <div className="p-3.5 rounded bg-white/[0.02] border border-white/5 space-y-1">
+                  <span className="text-xs font-mono-tech text-[#00f0ff] font-bold block">
+                    ০৩. {isBengali ? 'ব্যবসায়িক ফলাফল' : 'MEASURABLE RESULTS'}
                   </span>
                   <p className="text-[11px] font-mono-tech text-neutral-400">
-                    {bi('Rejecting generic templates in favor of cinematic work that commands immediate attention.', 'গতানুগতিক টেমপ্লেট বর্জন করে এমন ভিজ্যুয়াল যা দর্শকের গভীর মনোযোগ আকর্ষণ করে।')}
+                    {isBengali ? 'সেলস বৃদ্ধি ও ব্র্যান্ডের গ্রহণযোগ্যতা শতভাগ বাড়ানো।' : 'Maximized CTR, sales and ROI.'}
                   </p>
                 </div>
               </div>
@@ -117,46 +132,31 @@ export const AboutSection: React.FC = () => {
           </div>
         </div>
 
-        {/* 13. TOOLS & TECHNOLOGY SECTION (Integrated in Workflow Context) */}
-        <div className="space-y-8">
-          <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        {/* Tools & Production Stack */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10">
             <div>
               <div className="text-xs font-mono-tech uppercase tracking-widest text-[#d4ff00] mb-1">
-                {bi('PRODUCTION ECOSYSTEM', 'প্রযোজনা ইকোসিস্টেম')}
+                {isBengali ? 'প্রযুক্তি ও সফটওয়্যার' : 'SOFTWARE & AI STACK'}
               </div>
-              <h3 className="font-display font-black text-2xl sm:text-3xl text-white uppercase tracking-wider">
-                {t.about.creativeArsenal}
+              <h3 className="font-display font-bold text-xl sm:text-2xl text-white uppercase">
+                {isBengali ? 'যেসব আধুনিক প্রযুক্তিতে আমি কাজ করি' : 'PRODUCTION ARSENAL'}
               </h3>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TOOL_CATEGORIES.map((categoryGroup) => (
-              <div
-                key={categoryGroup.category}
-                className="p-5 rounded-sm bg-neutral-950 border border-white/15 space-y-4 hover:border-white/30 transition-colors"
-              >
-                <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                  <span className={`font-mono-tech text-xs font-bold ${
-                    categoryGroup.accent === 'yellow' ? 'text-[#d4ff00]' : 'text-[#ff007f]'
-                  }`}>
-                    {categoryGroup.category}
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  {categoryGroup.tools.map((tool) => (
-                    <div key={tool.name} className="space-y-0.5">
-                      <div className="font-mono-tech text-xs font-bold text-white flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                        {tool.name}
-                      </div>
-                      <div className="text-[11px] font-mono-tech text-neutral-400 pl-3 leading-tight">
-                        {tool.role}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 font-mono-tech text-xs">
+            {[
+              { name: 'Runway Gen-3', type: 'AI Animation / Video' },
+              { name: 'Midjourney v6', type: 'Generative Visuals' },
+              { name: 'Adobe Premiere', type: 'Editing & Timeline' },
+              { name: 'After Effects', type: 'Motion VFX & 3D' },
+              { name: 'Photoshop & AI', type: 'Graphic & Retouch' },
+              { name: 'DaVinci Resolve', type: 'Color Grading & 4K' },
+            ].map((tool, idx) => (
+              <div key={idx} className="p-3.5 rounded bg-neutral-950 border border-white/10 text-center space-y-1">
+                <div className="text-white font-bold">{tool.name}</div>
+                <div className="text-[10px] text-neutral-400">{tool.type}</div>
               </div>
             ))}
           </div>

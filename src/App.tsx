@@ -2,9 +2,13 @@ import React, { useState, useCallback } from 'react';
 import { ProgressBar } from './components/ProgressBar';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { RatingAndTrust } from './components/RatingAndTrust';
+import { SpecializationsSection } from './components/SpecializationsSection';
 import { FeaturedWork } from './components/FeaturedWork';
+import { WorkingProcess } from './components/WorkingProcess';
+import { ClientReviews } from './components/ClientReviews';
+import { PricingPackages } from './components/PricingPackages';
 import { AboutSection } from './components/AboutSection';
-import { ServicesSection } from './components/ServicesSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { ProjectModal } from './components/ProjectModal';
@@ -56,30 +60,36 @@ function PortfolioInner() {
           onOpenContact={() => handleOpenContact()}
         />
 
-        {/* 2. Featured Portfolio (Work) */}
+        {/* 2. Ratings & Trust Metrics (Ordered sequentially right after Hero) */}
+        <RatingAndTrust onOpenContact={() => handleOpenContact()} />
+
+        {/* 3. Core Specializations (AI Animation, Graphic Design, Video Ads, Music Video, AI Content) */}
+        <SpecializationsSection onSelectService={(service) => handleOpenContact(service)} />
+
+        {/* 4. Featured Portfolio (Work Showcase to impress clients) */}
         <FeaturedWork
           onSelectProject={(p) => setSelectedProject(p)}
           onPlayAudioTrack={() => {}}
         />
 
-        {/* 3. About Director & Philosophy */}
+        {/* 5. Clear Working Process (4 steps to build client confidence) */}
+        <WorkingProcess />
+
+        {/* 6. Client Reviews & Testimonials */}
+        <ClientReviews />
+
+        {/* 7. Pricing & Packages */}
+        <PricingPackages onSelectPackage={(pkg) => handleOpenContact(pkg)} />
+
+        {/* 8. About Barun Biswas & Creative Tools */}
         <AboutSection />
 
-        {/* 4. Services & What I Do */}
-        <ServicesSection
-          onSelectCategoryFilter={(_category) => {
-            const el = document.getElementById('work');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }}
-          onOpenContact={handleOpenContact}
-        />
-
-        {/* 5. Contact & Start a Project */}
+        {/* 9. Contact & Hire (WhatsApp, Email & Brief form) */}
         <ContactSection preselectedService={prefilledService} />
       </main>
 
-      {/* 6. Minimal Footer */}
-      <Footer />
+      {/* 10. Clean Professional Footer */}
+      <Footer onOpenContact={() => handleOpenContact()} />
 
       {/* Project Detail Modal */}
       <ProjectModal

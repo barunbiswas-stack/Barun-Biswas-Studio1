@@ -19,9 +19,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('portfolio_lang') as Language;
-      if (saved === 'mixed' || saved === 'bn' || saved === 'en') return saved;
+      if (saved === 'bn' || saved === 'mixed' || saved === 'en') return saved;
     }
-    return 'mixed';
+    return 'bn';
   });
 
   useEffect(() => {
