@@ -3,6 +3,7 @@ import { ArrowUpRight, Eye, Play, Sparkles, Filter, Music2, Film } from 'lucide-
 import { PORTFOLIO_PROJECTS } from '../data/portfolioData';
 import { CategoryType, Project } from '../types';
 import { audioSynth } from '../utils/audioSynth';
+import { useLanguage } from '../context/LanguageContext';
 
 interface FeaturedWorkProps {
   onSelectProject: (project: Project) => void;
@@ -13,16 +14,17 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
   onSelectProject,
   onPlayAudioTrack
 }) => {
+  const { t, isBengali } = useLanguage();
   const [selectedFilter, setSelectedFilter] = useState<CategoryType>('ALL');
 
   const filterCategories: { label: string; value: CategoryType }[] = [
-    { label: 'ALL WORK', value: 'ALL' },
-    { label: 'ADS & COMMERCIALS', value: 'ADS' },
-    { label: 'AI MUSIC', value: 'MUSIC' },
-    { label: 'CINEMATIC VIDEO', value: 'VIDEO' },
-    { label: 'GRAPHICS & POSTERS', value: 'GRAPHICS' },
-    { label: 'AI ART', value: 'AI ART' },
-    { label: 'SOCIAL REELS', value: 'SOCIAL' },
+    { label: isBengali ? 'সকল কাজ' : 'ALL WORK', value: 'ALL' },
+    { label: isBengali ? 'বিজ্ঞাপন ও কমার্শিয়াল' : 'ADS & COMMERCIALS', value: 'ADS' },
+    { label: isBengali ? 'মিউজিক ও সাউন্ড' : 'AI MUSIC', value: 'MUSIC' },
+    { label: isBengali ? 'সিনেমাটিক ভিডিও' : 'CINEMATIC VIDEO', value: 'VIDEO' },
+    { label: isBengali ? 'গ্রাফিক্স ও পোস্টার' : 'GRAPHICS & POSTERS', value: 'GRAPHICS' },
+    { label: isBengali ? 'ডিজিটাল আর্ট' : 'AI ART', value: 'AI ART' },
+    { label: isBengali ? 'সোশ্যাল রিলস' : 'SOCIAL REELS', value: 'SOCIAL' },
   ];
 
   const filteredProjects = selectedFilter === 'ALL'
@@ -37,14 +39,24 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
           <div>
             <div className="flex items-center gap-2 text-xs font-mono-tech uppercase tracking-widest text-[#d4ff00] mb-3">
               <span className="w-1.5 h-1.5 bg-[#d4ff00] rounded-full" />
-              <span>SELECTED ARCHIVE</span>
+              <span>{t.work.badge}</span>
             </div>
             <h2 className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white tracking-tight uppercase leading-none">
-              SELECTED <span className="text-[#ff007f]">WORK</span>
+              {isBengali ? (
+                <>
+                  নির্বাচিত <span className="text-[#ff007f]">কাজসমূহ</span>
+                </>
+              ) : (
+                <>
+                  SELECTED <span className="text-[#ff007f]">WORK</span>
+                </>
+              )}
             </h2>
           </div>
           <div className="text-xs sm:text-sm font-mono-tech text-neutral-400 max-w-md">
-            Asymmetrical editorial curation of original creative productions. Click any project to automatically play full 4K motion and synchronized spatial sound.
+            {isBengali
+              ? 'মৌলিক চলচ্চিত্র ও সৃজনশীল বিজ্ঞাপনের কিউরেটেড সংগ্রহ। সম্পূর্ণ মোশন ও অ্যানালগ সাউন্ড উপভোগ করতে যেকোনো প্রজেক্টে ক্লিক করুন।'
+              : 'Asymmetrical editorial curation of original creative productions. Click any project to automatically play full 4K motion and synchronized spatial sound.'}
           </div>
         </div>
 
@@ -52,7 +64,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
         <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-12 scrollbar-none">
           <span className="text-xs font-mono-tech text-neutral-500 uppercase tracking-wider mr-2 shrink-0 flex items-center gap-1">
             <Filter className="w-3.5 h-3.5 text-[#d4ff00]" />
-            FILTER:
+            {isBengali ? 'ফিল্টার:' : 'FILTER:'}
           </span>
           {filterCategories.map((tab) => (
             <button
@@ -129,7 +141,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
                     {/* Hover Prompt */}
                     <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black/80 text-[9px] font-mono-tech text-[#d4ff00] opacity-0 group-hover:opacity-100 transition-opacity">
                       <Play className="w-2.5 h-2.5 fill-current" />
-                      AUTOPLAY
+                      {isBengali ? 'অটোপ্লে' : 'AUTOPLAY'}
                     </span>
 
                     {project.audioSample && (
@@ -139,11 +151,11 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
                           audioSynth.playSfx('click');
                           onPlayAudioTrack(project.audioSample?.synthWaveType || 'cyber');
                         }}
-                        title="Preview Project Audio"
-                        className="px-2 py-1 rounded-sm bg-black/80 border border-white/20 text-[#d4ff00] hover:bg-[#d4ff00] hover:text-black transition-colors font-mono-tech text-[10px] flex items-center gap-1"
+                        title={isBengali ? 'অডিও শুনুন' : 'Preview Project Audio'}
+                        className="px-2 py-1 rounded-sm bg-black/80 border border-white/20 text-[#d4ff00] hover:bg-[#d4ff00] hover:text-black transition-colors font-mono-tech text-[10px] flex items-center gap-1 cursor-pointer"
                       >
                         <Music2 className="w-3 h-3" />
-                        <span>AUDIO</span>
+                        <span>{isBengali ? 'অডিও' : 'AUDIO'}</span>
                       </button>
                     )}
                   </div>

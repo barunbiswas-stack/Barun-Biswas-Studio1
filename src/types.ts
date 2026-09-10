@@ -1,3 +1,5 @@
+export type Language = 'mixed' | 'en' | 'bn';
+
 export type CategoryType = 
   | 'ALL'
   | 'ADS'

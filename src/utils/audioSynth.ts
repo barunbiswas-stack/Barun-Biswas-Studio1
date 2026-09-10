@@ -1,7 +1,8 @@
 /**
  * Web Audio API Synthesizer & Audio Visualizer Engine
- * Generates rich, real-time cinematic synthwave, cyber basslines, and ambient soundscapes
- * along with real-time FFT frequency analysis for waveform visualizers.
+ * Generates rich, loud, crystal-clear real-time cinematic synthwave, 
+ * cyber basslines, and ambient soundscapes with robust browser autoplay unlock
+ * and real-time FFT frequency analysis for waveform visualizers.
  */
 
 class AudioSynthEngine {
@@ -9,26 +10,67 @@ class AudioSynthEngine {
   private isPlaying: boolean = false;
   private currentTrackType: 'cyber' | 'ambient' | 'energetic' | null = null;
   private intervalId: number | null = null;
+  private secondaryIntervalId: number | null = null;
   private analyzerNode: AnalyserNode | null = null;
   private masterGain: GainNode | null = null;
-  private activeNodes: (AudioNode | number)[] = [];
+  private compressor: DynamicsCompressorNode | null = null;
+  private activeNodes: (AudioScheduledSourceNode | number)[] = [];
   private onStateChangeCallbacks: Set<(isPlaying: boolean, trackType: string | null) => void> = new Set();
-  private volume: number = 0.35;
+  private volume: number = 0.85; // Louder, clearly audible default
   private isMutedState: boolean = false;
+  private isUnlocked: boolean = false;
+
+  constructor() {
+    // Setup automatic unlock on user interaction
+    if (typeof window !== 'undefined') {
+      const unlock = () => {
+        this.unlock();
+      };
+      window.addEventListener('click', unlock, { passive: true });
+      window.addEventListener('keydown', unlock, { passive: true });
+      window.addEventListener('touchstart', unlock, { passive: true });
+      window.addEventListener('pointerdown', unlock, { passive: true });
+    }
+  }
+
+  public async unlock(): Promise<void> {
+    if (!this.ctx) {
+      this.initContext();
+    }
+    if (this.ctx) {
+      if (this.ctx.state === 'suspended') {
+        try {
+          await this.ctx.resume();
+          this.isUnlocked = true;
+        } catch {
+          // will resume on next direct gesture
+        }
+      } else if (this.ctx.state === 'running') {
+        this.isUnlocked = true;
+      }
+    }
+  }
 
   public initContext() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new AudioCtx();
+
       this.analyzerNode = this.ctx.createAnalyser();
       this.analyzerNode.fftSize = 64;
+      this.analyzerNode.smoothingTimeConstant = 0.8;
+
       this.masterGain = this.ctx.createGain();
       this.masterGain.gain.setValueAtTime(this.isMutedState ? 0 : this.volume, this.ctx.currentTime);
+
+      // Clean Direct Signal Chain: Master Gain -> Analyser -> Destination
+      // Avoids aggressive dynamics compressor suppression so users clearly hear all notes
       this.masterGain.connect(this.analyzerNode);
       this.analyzerNode.connect(this.ctx.destination);
     }
+
     if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
   }
 
@@ -59,8 +101,11 @@ class AudioSynthEngine {
   public playSfx(type: 'click' | 'whoosh' | 'glitch' | 'sub' = 'click') {
     try {
       this.initContext();
-      if (!this.ctx || !this.masterGain) return;
+      if (!this.ctx || !this.masterGain || this.isMutedState) return;
       const ctx = this.ctx;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
       const t = ctx.currentTime;
       const sfxGain = ctx.createGain();
       sfxGain.connect(this.masterGain);
@@ -68,31 +113,31 @@ class AudioSynthEngine {
       if (type === 'click') {
         const osc = ctx.createOscillator();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, t);
-        osc.frequency.exponentialRampToValueAtTime(200, t + 0.04);
-        sfxGain.gain.setValueAtTime(0.12, t);
-        sfxGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+        osc.frequency.setValueAtTime(900, t);
+        osc.frequency.exponentialRampToValueAtTime(300, t + 0.05);
+        sfxGain.gain.setValueAtTime(0.3, t);
+        sfxGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
         osc.connect(sfxGain);
         osc.start(t);
-        osc.stop(t + 0.05);
+        osc.stop(t + 0.06);
       } else if (type === 'whoosh') {
         const osc = ctx.createOscillator();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(140, t);
-        osc.frequency.exponentialRampToValueAtTime(440, t + 0.1);
-        osc.frequency.exponentialRampToValueAtTime(90, t + 0.2);
-        sfxGain.gain.setValueAtTime(0.01, t);
-        sfxGain.gain.linearRampToValueAtTime(0.15, t + 0.08);
-        sfxGain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        osc.frequency.setValueAtTime(220, t);
+        osc.frequency.exponentialRampToValueAtTime(660, t + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(140, t + 0.22);
+        sfxGain.gain.setValueAtTime(0.02, t);
+        sfxGain.gain.linearRampToValueAtTime(0.35, t + 0.1);
+        sfxGain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
         osc.connect(sfxGain);
         osc.start(t);
-        osc.stop(t + 0.24);
+        osc.stop(t + 0.26);
       } else if (type === 'sub') {
         const osc = ctx.createOscillator();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(120, t);
-        osc.frequency.exponentialRampToValueAtTime(38, t + 0.35);
-        sfxGain.gain.setValueAtTime(0.25, t);
+        osc.frequency.setValueAtTime(160, t);
+        osc.frequency.exponentialRampToValueAtTime(60, t + 0.35);
+        sfxGain.gain.setValueAtTime(0.45, t);
         sfxGain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
         osc.connect(sfxGain);
         osc.start(t);
@@ -101,17 +146,51 @@ class AudioSynthEngine {
         // Glitch
         const osc = ctx.createOscillator();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(320, t);
-        osc.frequency.setValueAtTime(640, t + 0.03);
-        osc.frequency.setValueAtTime(180, t + 0.06);
-        sfxGain.gain.setValueAtTime(0.08, t);
-        sfxGain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+        osc.frequency.setValueAtTime(520, t);
+        osc.frequency.setValueAtTime(960, t + 0.03);
+        osc.frequency.setValueAtTime(320, t + 0.06);
+        sfxGain.gain.setValueAtTime(0.25, t);
+        sfxGain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
         osc.connect(sfxGain);
         osc.start(t);
-        osc.stop(t + 0.12);
+        osc.stop(t + 0.13);
       }
     } catch {
-      // Audio context might be restricted
+      // audio context blocked
+    }
+  }
+
+  /**
+   * Explicit audio test sound to confirm audio output is working and audible
+   */
+  public async testSound(): Promise<void> {
+    try {
+      this.initContext();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') {
+        await this.ctx.resume();
+      }
+      this.isMutedState = false;
+      this.setVolume(0.85);
+
+      const ctx = this.ctx;
+      const t = ctx.currentTime;
+      const chord = [440, 554.37, 659.25, 880]; // A major arpeggio
+      chord.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t + idx * 0.08);
+        gain.gain.setValueAtTime(0.01, t + idx * 0.08);
+        gain.gain.linearRampToValueAtTime(0.35, t + idx * 0.08 + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.08 + 0.5);
+        osc.connect(gain);
+        gain.connect(this.masterGain!);
+        osc.start(t + idx * 0.08);
+        osc.stop(t + idx * 0.08 + 0.55);
+      });
+    } catch {
+      // blocked
     }
   }
 
@@ -131,9 +210,17 @@ class AudioSynthEngine {
     return dataArray;
   }
 
-  public playTrack(trackType: 'cyber' | 'ambient' | 'energetic') {
+  public async playTrack(trackType: 'cyber' | 'ambient' | 'energetic') {
     this.initContext();
     if (!this.ctx || !this.masterGain) return;
+
+    if (this.ctx.state === 'suspended') {
+      try {
+        await this.ctx.resume();
+      } catch {
+        // User gesture needed
+      }
+    }
 
     if (this.isPlaying && this.currentTrackType === trackType) {
       this.stop();
@@ -143,7 +230,15 @@ class AudioSynthEngine {
     this.stop();
     this.isPlaying = true;
     this.currentTrackType = trackType;
+    this.isMutedState = false;
+    
+    // Ensure master volume is unmuted and set
+    this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+
     this.notify();
+
+    // Instant initial cue chord so sound is immediately heard from the first millisecond
+    this.playImmediateCue(trackType);
 
     if (trackType === 'cyber') {
       this.startCyberTrack();
@@ -151,6 +246,30 @@ class AudioSynthEngine {
       this.startAmbientTrack();
     } else {
       this.startEnergeticTrack();
+    }
+  }
+
+  private playImmediateCue(trackType: string) {
+    if (!this.ctx || !this.masterGain) return;
+    try {
+      const ctx = this.ctx;
+      const t = ctx.currentTime;
+      const cueFreqs = trackType === 'ambient' ? [440, 554.37, 659.25] : trackType === 'energetic' ? [293.66, 369.99, 440] : [220, 329.63, 440];
+      cueFreqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, t + idx * 0.04);
+        gain.gain.setValueAtTime(0.01, t + idx * 0.04);
+        gain.gain.linearRampToValueAtTime(0.3, t + idx * 0.04 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.04 + 0.35);
+        osc.connect(gain);
+        gain.connect(this.masterGain!);
+        osc.start(t + idx * 0.04);
+        osc.stop(t + idx * 0.04 + 0.38);
+      });
+    } catch {
+      // ignore
     }
   }
 
@@ -166,6 +285,10 @@ class AudioSynthEngine {
     if (this.intervalId !== null) {
       clearInterval(this.intervalId);
       this.intervalId = null;
+    }
+    if (this.secondaryIntervalId !== null) {
+      clearInterval(this.secondaryIntervalId);
+      this.secondaryIntervalId = null;
     }
 
     if (this.activeNodes.length > 0) {
@@ -189,71 +312,224 @@ class AudioSynthEngine {
   public getStatus() {
     return {
       isPlaying: this.isPlaying,
-      currentTrackType: this.currentTrackType
+      currentTrackType: this.currentTrackType,
+      isMuted: this.isMutedState,
+      volume: this.volume
     };
   }
 
-  // --- Track Synthesizers ---
+  // --- Track 1: CYBERPUNK OVERDRIVE (Driving Synthwave with Clear Melody & Beats) ---
   private startCyberTrack() {
     if (!this.ctx || !this.masterGain) return;
     const ctx = this.ctx;
     const master = this.masterGain;
 
-    // 1. Deep Sub Bass drone (D1 = 36.71 Hz)
-    const subOsc = ctx.createOscillator();
-    const subGain = ctx.createGain();
-    subOsc.type = 'sawtooth';
-    subOsc.frequency.setValueAtTime(55, ctx.currentTime); // A1
+    // 1. Warm Resonant Bass Drone (Audible 110Hz + 220Hz Harmonics)
+    const bassOsc1 = ctx.createOscillator();
+    const bassOsc2 = ctx.createOscillator();
+    const bassGain = ctx.createGain();
+    const bassFilter = ctx.createBiquadFilter();
 
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(220, ctx.currentTime);
-    filter.Q.setValueAtTime(6, ctx.currentTime);
+    bassOsc1.type = 'sawtooth';
+    bassOsc1.frequency.setValueAtTime(110, ctx.currentTime); // A2 (audible bass)
+    bassOsc2.type = 'triangle';
+    bassOsc2.frequency.setValueAtTime(220, ctx.currentTime); // A3 harmonic
 
-    subGain.gain.setValueAtTime(0.18, ctx.currentTime);
-    subOsc.connect(filter);
-    filter.connect(subGain);
-    subGain.connect(master);
-    subOsc.start();
-    this.activeNodes.push(subOsc);
+    bassFilter.type = 'lowpass';
+    bassFilter.frequency.setValueAtTime(650, ctx.currentTime);
+    bassFilter.Q.setValueAtTime(4, ctx.currentTime);
 
-    // 2. 16th-note arpeggio notes in D Minor Pentatonic (D3, F3, G3, A3, C4)
-    const arpNotes = [146.83, 174.61, 196.00, 220.00, 261.63, 293.66];
+    bassGain.gain.setValueAtTime(0.35, ctx.currentTime);
+
+    bassOsc1.connect(bassFilter);
+    bassOsc2.connect(bassFilter);
+    bassFilter.connect(bassGain);
+    bassGain.connect(master);
+
+    bassOsc1.start();
+    bassOsc2.start();
+    this.activeNodes.push(bassOsc1, bassOsc2);
+
+    // 2. Clear, Bright Cyber Melody & Arpeggiator (Audible 300Hz - 900Hz)
+    // Notes in D Minor / A Minor pentatonic: A3, C4, D4, E4, G4, A4, C5
+    const melodyNotes = [220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 440.00];
     let step = 0;
 
     const interval = window.setInterval(() => {
       if (!this.isPlaying || !this.ctx) return;
       const t = ctx.currentTime;
-      const noteFreq = arpNotes[step % arpNotes.length];
-      
-      const osc = ctx.createOscillator();
+      const noteFreq = melodyNotes[step % melodyNotes.length];
+
+      // Dual oscillator synth lead for rich harmonic bite
+      const oscLead = ctx.createOscillator();
+      const oscHarmonic = ctx.createOscillator();
       const noteGain = ctx.createGain();
       const noteFilter = ctx.createBiquadFilter();
 
-      osc.type = step % 4 === 0 ? 'square' : 'sawtooth';
-      osc.frequency.setValueAtTime(noteFreq, t);
+      oscLead.type = 'sawtooth';
+      oscLead.frequency.setValueAtTime(noteFreq, t);
 
-      noteFilter.type = 'bandpass';
-      noteFilter.frequency.setValueAtTime(noteFreq * 2, t);
+      oscHarmonic.type = 'square';
+      oscHarmonic.frequency.setValueAtTime(noteFreq * 1.5, t); // Perfect fifth overtone
+
+      noteFilter.type = 'lowpass';
+      noteFilter.frequency.setValueAtTime(noteFreq * 3.5, t);
       noteFilter.Q.setValueAtTime(3, t);
 
-      noteGain.gain.setValueAtTime(0.12, t);
-      noteGain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      // Louder, punchier envelope
+      noteGain.gain.setValueAtTime(0.32, t);
+      noteGain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
 
-      osc.connect(noteFilter);
+      oscLead.connect(noteFilter);
+      oscHarmonic.connect(noteFilter);
       noteFilter.connect(noteGain);
       noteGain.connect(master);
 
-      osc.start(t);
-      osc.stop(t + 0.2);
+      oscLead.start(t);
+      oscHarmonic.start(t);
+      oscLead.stop(t + 0.24);
+      oscHarmonic.stop(t + 0.24);
 
-      // Add a punchy click/kick every 4 beats
+      // 3. Punchy Kick on beats 0, 4, 8, 12
       if (step % 4 === 0) {
         const kickOsc = ctx.createOscillator();
         const kickGain = ctx.createGain();
-        kickOsc.frequency.setValueAtTime(130, t);
-        kickOsc.frequency.exponentialRampToValueAtTime(30, t + 0.12);
-        kickGain.gain.setValueAtTime(0.25, t);
+        kickOsc.frequency.setValueAtTime(160, t);
+        kickOsc.frequency.exponentialRampToValueAtTime(48, t + 0.12);
+        kickGain.gain.setValueAtTime(0.55, t);
+        kickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+        kickOsc.connect(kickGain);
+        kickGain.connect(master);
+        kickOsc.start(t);
+        kickOsc.stop(t + 0.18);
+      }
+
+      // 4. Snare / Noise Clap on beats 2, 6, 10, 14
+      if (step % 4 === 2) {
+        const snareOsc = ctx.createOscillator();
+        const snareGain = ctx.createGain();
+        snareOsc.type = 'triangle';
+        snareOsc.frequency.setValueAtTime(340, t);
+        snareOsc.frequency.exponentialRampToValueAtTime(90, t + 0.1);
+        snareGain.gain.setValueAtTime(0.38, t);
+        snareGain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+        snareOsc.connect(snareGain);
+        snareGain.connect(master);
+        snareOsc.start(t);
+        snareOsc.stop(t + 0.15);
+      }
+
+      // 5. Hi-hat click on every offbeat
+      if (step % 2 === 1) {
+        const hatOsc = ctx.createOscillator();
+        const hatGain = ctx.createGain();
+        hatOsc.type = 'square';
+        hatOsc.frequency.setValueAtTime(8000, t);
+        hatGain.gain.setValueAtTime(0.12, t);
+        hatGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+        hatOsc.connect(hatGain);
+        hatGain.connect(master);
+        hatOsc.start(t);
+        hatOsc.stop(t + 0.05);
+      }
+
+      step++;
+    }, 130);
+
+    this.intervalId = interval;
+  }
+
+  // --- Track 2: ASTRAL DRIFT (Cinematic Ambient Chords with Rich Harmonics & Bell Shimmer) ---
+  private startAmbientTrack() {
+    if (!this.ctx || !this.masterGain) return;
+    const ctx = this.ctx;
+    const master = this.masterGain;
+
+    // Cinematic chord progressions with rich, audible frequencies
+    const ambientChords = [
+      [220.00, 261.63, 329.63, 392.00, 440.00], // A minor 7 (A3, C4, E4, G4, A4)
+      [174.61, 261.63, 329.63, 349.23, 523.25], // F major 7 (F3, C4, E4, F4, C5)
+      [261.63, 329.63, 392.00, 493.88, 523.25], // C major 7 (C4, E4, G4, B4, C5)
+      [196.00, 293.66, 329.63, 392.00, 587.33]  // G sus / add9 (G3, D4, E4, G4, D5)
+    ];
+
+    let chordIndex = 0;
+    const playLushChord = () => {
+      if (!this.isPlaying || !this.ctx) return;
+      const currentChord = ambientChords[chordIndex % ambientChords.length];
+      chordIndex++;
+
+      // Play each note with warm stereo-like detuned pair
+      currentChord.forEach((freq, i) => {
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const noteGain = ctx.createGain();
+        const noteFilter = ctx.createBiquadFilter();
+
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(freq * 1.004, ctx.currentTime); // Gentle chorus detune
+
+        noteFilter.type = 'lowpass';
+        noteFilter.frequency.setValueAtTime(800 + i * 150, ctx.currentTime);
+        noteFilter.Q.setValueAtTime(2, ctx.currentTime);
+
+        // Clear, audible volume with gentle swell and long release
+        noteGain.gain.setValueAtTime(0.01, ctx.currentTime);
+        noteGain.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 0.8);
+        noteGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3.4);
+
+        osc1.connect(noteFilter);
+        osc2.connect(noteFilter);
+        noteFilter.connect(noteGain);
+        noteGain.connect(master);
+
+        osc1.start(ctx.currentTime);
+        osc2.start(ctx.currentTime);
+        osc1.stop(ctx.currentTime + 3.5);
+        osc2.stop(ctx.currentTime + 3.5);
+      });
+
+      // Add a delicate crystal chime on top of the chord
+      const bellOsc = ctx.createOscillator();
+      const bellGain = ctx.createGain();
+      bellOsc.type = 'sine';
+      bellOsc.frequency.setValueAtTime(currentChord[currentChord.length - 1] * 2, ctx.currentTime + 0.2);
+      bellGain.gain.setValueAtTime(0.2, ctx.currentTime + 0.2);
+      bellGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.8);
+      bellOsc.connect(bellGain);
+      bellGain.connect(master);
+      bellOsc.start(ctx.currentTime + 0.2);
+      bellOsc.stop(ctx.currentTime + 1.9);
+    };
+
+    playLushChord();
+    this.intervalId = window.setInterval(playLushChord, 3200);
+  }
+
+  // --- Track 3: VELOCITY PULSE (High-Energy Commercial Beat & Synth Brass) ---
+  private startEnergeticTrack() {
+    if (!this.ctx || !this.masterGain) return;
+    const ctx = this.ctx;
+    const master = this.masterGain;
+
+    let beat = 0;
+    // Energetic driving bassline in D Minor
+    const bassline = [146.83, 146.83, 174.61, 196.00, 146.83, 146.83, 220.00, 196.00];
+
+    const interval = window.setInterval(() => {
+      if (!this.isPlaying || !this.ctx) return;
+      const t = ctx.currentTime;
+
+      // 1. Heavy Punchy Kick on every beat
+      if (beat % 2 === 0) {
+        const kickOsc = ctx.createOscillator();
+        const kickGain = ctx.createGain();
+        kickOsc.frequency.setValueAtTime(180, t);
+        kickOsc.frequency.exponentialRampToValueAtTime(45, t + 0.1);
+        kickGain.gain.setValueAtTime(0.65, t);
         kickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
         kickOsc.connect(kickGain);
         kickGain.connect(master);
@@ -261,107 +537,63 @@ class AudioSynthEngine {
         kickOsc.stop(t + 0.16);
       }
 
-      step++;
-    }, 140);
-
-    this.intervalId = interval;
-  }
-
-  private startAmbientTrack() {
-    if (!this.ctx || !this.masterGain) return;
-    const ctx = this.ctx;
-    const master = this.masterGain;
-
-    const chords = [
-      [130.81, 196.00, 261.63, 329.63], // C major 7
-      [110.00, 164.81, 220.00, 277.18], // A minor
-      [146.83, 220.00, 293.66, 349.23], // D minor 7
-      [98.00, 146.83, 196.00, 246.94]   // G sus
-    ];
-
-    let chordIdx = 0;
-    const playChord = () => {
-      if (!this.isPlaying || !this.ctx) return;
-      const currentChord = chords[chordIdx % chords.length];
-      chordIdx++;
-
-      currentChord.forEach((freq) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const filter = ctx.createBiquadFilter();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(450, ctx.currentTime);
-
-        gain.gain.setValueAtTime(0.001, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 1.2);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3.8);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(master);
-
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 4.0);
-      });
-    };
-
-    playChord();
-    this.intervalId = window.setInterval(playChord, 3500);
-  }
-
-  private startEnergeticTrack() {
-    if (!this.ctx || !this.masterGain) return;
-    const ctx = this.ctx;
-    const master = this.masterGain;
-
-    let beat = 0;
-    const interval = window.setInterval(() => {
-      if (!this.isPlaying || !this.ctx) return;
-      const t = ctx.currentTime;
-
-      // Snare / clap on beats 2 and 4
-      if (beat % 2 === 1) {
-        const snareNoise = ctx.createOscillator();
+      // 2. Punchy Snare on beats 2 and 6
+      if (beat % 4 === 2) {
+        const snareOsc = ctx.createOscillator();
         const snareGain = ctx.createGain();
-        snareNoise.type = 'triangle';
-        snareNoise.frequency.setValueAtTime(280, t);
-        snareNoise.frequency.exponentialRampToValueAtTime(60, t + 0.08);
-        snareGain.gain.setValueAtTime(0.18, t);
-        snareGain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-        snareNoise.connect(snareGain);
+        snareOsc.type = 'triangle';
+        snareOsc.frequency.setValueAtTime(260, t);
+        snareOsc.frequency.exponentialRampToValueAtTime(90, t + 0.1);
+        snareGain.gain.setValueAtTime(0.42, t);
+        snareGain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+        snareOsc.connect(snareGain);
         snareGain.connect(master);
-        snareNoise.start(t);
-        snareNoise.stop(t + 0.14);
+        snareOsc.start(t);
+        snareOsc.stop(t + 0.17);
       }
 
-      // Driving bass rhythm
-      const bassFreqs = [73.42, 73.42, 87.31, 98.00];
+      // 3. Energetic Synth Bassline (Audible 146Hz - 220Hz)
       const bassOsc = ctx.createOscillator();
       const bassGain = ctx.createGain();
+      const bassFilter = ctx.createBiquadFilter();
+
       bassOsc.type = 'sawtooth';
-      bassOsc.frequency.setValueAtTime(bassFreqs[beat % 4], t);
+      bassOsc.frequency.setValueAtTime(bassline[beat % bassline.length], t);
 
-      const f = ctx.createBiquadFilter();
-      f.type = 'lowpass';
-      f.frequency.setValueAtTime(400, t);
-      f.frequency.exponentialRampToValueAtTime(100, t + 0.15);
+      bassFilter.type = 'lowpass';
+      bassFilter.frequency.setValueAtTime(900, t);
+      bassFilter.frequency.exponentialRampToValueAtTime(300, t + 0.14);
+      bassFilter.Q.setValueAtTime(5, t);
 
-      bassGain.gain.setValueAtTime(0.2, t);
-      bassGain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      bassGain.gain.setValueAtTime(0.38, t);
+      bassGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
 
-      bassOsc.connect(f);
-      f.connect(bassGain);
+      bassOsc.connect(bassFilter);
+      bassFilter.connect(bassGain);
       bassGain.connect(master);
 
       bassOsc.start(t);
-      bassOsc.stop(t + 0.22);
+      bassOsc.stop(t + 0.16);
+
+      // 4. Synth Brass Stab on beat 0 and beat 4
+      if (beat % 8 === 0 || beat % 8 === 3) {
+        const brassFreqs = [293.66, 349.23, 440.00]; // D minor triad
+        brassFreqs.forEach(f => {
+          const brassOsc = ctx.createOscillator();
+          const brassGain = ctx.createGain();
+          brassOsc.type = 'sawtooth';
+          brassOsc.frequency.setValueAtTime(f, t);
+          brassGain.gain.setValueAtTime(0.2, t);
+          brassGain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+          brassOsc.connect(brassGain);
+          brassGain.connect(master);
+          brassOsc.start(t);
+          brassOsc.stop(t + 0.24);
+        });
+      }
 
       beat++;
-    }, 125); // ~120 BPM
+    }, 120); // 125 BPM
 
     this.intervalId = interval;
   }

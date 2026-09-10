@@ -1,28 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   X, Play, Pause, Volume2, VolumeX, Maximize2, Minimize2,
   Film, Image as ImageIcon, Sparkles, Sliders, CheckCircle2,
-  Copy, Check, Radio, Repeat, FastForward, RotateCcw
+  Copy, Check, Radio, Repeat, FastForward, RotateCcw,
+  ChevronLeft, ChevronRight, BarChart3, Clock, Cpu, Award
 } from 'lucide-react';
 import { Project } from '../types';
 import { audioSynth } from '../utils/audioSynth';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ProjectModalProps {
   project: Project | null;
   onClose: () => void;
   onPlayAudioSample: (type: 'cyber' | 'ambient' | 'energetic') => void;
+  onNextProject?: () => void;
+  onPrevProject?: () => void;
+  projectIndex?: number;
+  totalProjects?: number;
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({
   project,
   onClose,
-  onPlayAudioSample
+  onPlayAudioSample,
+  onNextProject,
+  onPrevProject,
+  projectIndex,
+  totalProjects
 }) => {
+  const { t, isBengali } = useLanguage();
   const [activeMediaIdx, setActiveMediaIdx] = useState(0);
   const [mediaMode, setMediaMode] = useState<'video' | 'still'>('video');
   const [isPlaying, setIsPlaying] = useState(true);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
-  const [volume, setVolume] = useState(0.4);
+  const [volume, setVolume] = useState(0.75); // Loud, audible default
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -34,20 +46,50 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   const playerContainerRef = useRef<HTMLDivElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  if (!project) return null;
+  // Keyboard navigation & controls
+  useEffect(() => {
+    if (!project) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      } else if (e.key === 'ArrowRight' || e.key === 'j' || e.key === 'J' || e.key === ']') {
+        e.preventDefault();
+        onNextProject?.();
+      } else if (e.key === 'ArrowLeft' || e.key === 'k' || e.key === 'K' || e.key === '[') {
+        e.preventDefault();
+        onPrevProject?.();
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        handleTogglePlay();
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        handleToggleMute();
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        handleFullscreenToggle();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [project, isPlaying, isAudioMuted, onNextProject, onPrevProject, onClose]);
 
   // Aggregate media list
-  const allImages = [project.coverImage, ...(project.secondaryImages || [])];
-  const allVideos = [
+  const allImages = project ? [project.coverImage, ...(project.secondaryImages || [])] : [];
+  const allVideos = project ? [
     project.videoTeaser || 'https://videos.pexels.com/video-files/3044127/3044127-hd_1920_1080_24fps.mp4',
     ...(project.secondaryVideos || [])
-  ];
+  ] : [];
 
-  const currentVideoSrc = allVideos[activeMediaIdx % allVideos.length];
-  const currentImageSrc = allImages[activeMediaIdx % allImages.length];
+  const currentVideoSrc = allVideos[activeMediaIdx % (allVideos.length || 1)];
+  const currentImageSrc = allImages[activeMediaIdx % (allImages.length || 1)];
 
   // Automatic Smooth Playback with Sound on Open
   useEffect(() => {
+    if (!project) return;
     // Reset indices
     setActiveMediaIdx(0);
     setMediaMode('video');
@@ -207,62 +249,168 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   };
 
   return (
-    <div
-      id="project-detail-modal"
-      className="fixed inset-0 z-50 overflow-y-auto bg-black/95 backdrop-blur-xl flex flex-col justify-start items-center p-3 sm:p-6 md:p-8 animate-fade-in"
-    >
-      {/* Top Floating Control Bar */}
-      <div className="w-full max-w-5xl flex items-center justify-between pb-3 mb-4 border-b border-white/10 sticky top-0 z-30 bg-black/80 backdrop-blur-md pt-2">
-        <div className="flex items-center gap-3">
-          <span className="w-2 h-2 rounded-full bg-[#d4ff00] animate-pulse" />
-          <span className="font-mono-tech text-xs text-[#d4ff00] font-bold tracking-wider">
-            CINEMATIC ARCHIVE // {project.category}
-          </span>
-          <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] font-mono-tech text-neutral-300 hidden sm:inline">
-            AUTOPLAY ENGINE: ACTIVE
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={handleCopyShare}
-            className="px-3 py-1.5 rounded-sm bg-white/5 border border-white/15 hover:border-[#d4ff00] text-xs font-mono-tech text-neutral-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+    <AnimatePresence>
+      {project && (
+        <motion.div
+          key="modal-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.24 }}
+          id="project-detail-modal"
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/95 backdrop-blur-2xl flex flex-col justify-start items-center p-3 sm:p-6 md:p-8"
+        >
+          {/* Animated Modal Card with Spring Entrance */}
+          <motion.div
+            key={project.id}
+            initial={{ opacity: 0, scale: 0.90, y: 36, rotateX: 2 }}
+            animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 20 }}
+            transition={{ type: 'spring', damping: 24, stiffness: 280, mass: 0.8 }}
+            className="w-full max-w-5xl flex flex-col items-center"
           >
-            {copiedLink ? <Check className="w-3.5 h-3.5 text-[#d4ff00]" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copiedLink ? 'LINK COPIED' : 'SHARE'}</span>
-          </button>
-          <button
-            onClick={() => {
-              audioSynth.playSfx('whoosh');
-              onClose();
-            }}
-            id="close-project-modal-btn"
-            className="p-2 rounded-sm bg-neutral-900 border border-white/20 text-neutral-300 hover:text-white hover:border-[#ff007f] hover:bg-[#ff007f]/10 transition-colors cursor-pointer"
-            aria-label="Close Project View"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+            {/* Top Floating Control & Navigation Bar */}
+            <div className="w-full flex items-center justify-between pb-3 mb-4 border-b border-white/10 sticky top-0 z-30 bg-black/85 backdrop-blur-md pt-2">
+              {/* Left: Category & Project Index */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                <span className="w-2 h-2 rounded-full bg-[#d4ff00] animate-pulse" />
+                <span className="font-mono-tech text-xs text-[#d4ff00] font-bold tracking-wider">
+                  {isBengali ? 'আর্কাইভ' : 'ARCHIVE'} // {project.category}
+                </span>
+                {typeof projectIndex === 'number' && typeof totalProjects === 'number' && (
+                  <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] font-mono-tech text-white/80">
+                    {isBengali ? 'প্রজেক্ট' : 'PROJECT'} 0{projectIndex + 1} / 0{totalProjects}
+                  </span>
+                )}
+                {/* Keyboard Shortcuts Hint */}
+                <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-mono-tech text-neutral-400 bg-white/5 px-2 py-0.5 rounded">
+                  <span className="text-white">[← / → / J / K]</span> {isBengali ? 'পূর্ব / পরবর্তী' : 'PREV / NEXT'}
+                  <span className="text-white ml-2">[SPACE]</span> {isBengali ? 'চালু/থামান' : 'PLAY/PAUSE'}
+                  <span className="text-white ml-2">[M]</span> {isBengali ? 'মিউট' : 'MUTE'}
+                  <span className="text-white ml-2">[ESC]</span> {isBengali ? 'বন্ধ' : 'CLOSE'}
+                </div>
+              </div>
 
-      {/* Main Container */}
-      <div className="w-full max-w-5xl space-y-6 pb-16">
-        {/* Header Title Section */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-mono-tech text-[#ff007f] tracking-widest uppercase">
-              {project.subtitle}
-            </span>
-            <span className="text-neutral-500 text-xs font-mono-tech">•</span>
-            <span className="text-neutral-400 text-xs font-mono-tech">{project.duration || 'ORIGINAL PRODUCTION'}</span>
-          </div>
-          <h1 className="font-display font-black text-2xl sm:text-4xl md:text-5xl text-white tracking-tight uppercase leading-none">
-            {project.title}
-          </h1>
-          <p className="text-xs sm:text-base font-mono-tech text-neutral-300 max-w-3xl leading-relaxed">
-            {project.brief}
-          </p>
-        </div>
+              {/* Right: Prev/Next & Actions */}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {onPrevProject && (
+                  <button
+                    onClick={() => {
+                      audioSynth.playSfx('whoosh');
+                      onPrevProject();
+                    }}
+                    title={isBengali ? 'পূর্ববর্তী প্রজেক্ট [বাম তীর]' : 'Previous Project [Left Arrow]'}
+                    className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-sm bg-neutral-900 border border-white/15 text-xs font-mono-tech text-neutral-300 hover:text-white hover:border-[#d4ff00] flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">{isBengali ? 'পূর্ববর্তী' : 'PREV'}</span>
+                  </button>
+                )}
+
+                {onNextProject && (
+                  <button
+                    onClick={() => {
+                      audioSynth.playSfx('whoosh');
+                      onNextProject();
+                    }}
+                    title={isBengali ? 'পরবর্তী প্রজেক্ট [ডান তীর]' : 'Next Project [Right Arrow]'}
+                    className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-sm bg-neutral-900 border border-white/15 text-xs font-mono-tech text-neutral-300 hover:text-white hover:border-[#d4ff00] flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <span className="hidden sm:inline">{isBengali ? 'পরবর্তী' : 'NEXT'}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
+
+                <button
+                  onClick={handleCopyShare}
+                  className="px-2.5 py-1.5 rounded-sm bg-white/5 border border-white/15 hover:border-[#d4ff00] text-xs font-mono-tech text-neutral-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {copiedLink ? <Check className="w-3.5 h-3.5 text-[#d4ff00]" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span className="hidden sm:inline">{copiedLink ? (isBengali ? 'কপিকৃত' : 'COPIED') : (isBengali ? 'শেয়ার' : 'SHARE')}</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    audioSynth.playSfx('whoosh');
+                    onClose();
+                  }}
+                  id="close-project-modal-btn"
+                  title={isBengali ? 'বন্ধ করুন [Escape]' : 'Close Modal [Escape]'}
+                  className="p-1.5 sm:p-2 rounded-sm bg-neutral-900 border border-white/20 text-neutral-300 hover:text-white hover:border-[#ff007f] hover:bg-[#ff007f]/10 transition-colors cursor-pointer"
+                  aria-label="Close Project View"
+                >
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Main Container */}
+            <div className="w-full space-y-6 pb-16">
+              {/* Header Title Section */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-mono-tech text-[#ff007f] tracking-widest uppercase">
+                    {project.subtitle}
+                  </span>
+                  <span className="text-neutral-500 text-xs font-mono-tech">•</span>
+                  <span className="text-neutral-400 text-xs font-mono-tech">{project.duration || (isBengali ? 'স্বতন্ত্র প্রযোজনা' : 'ORIGINAL PRODUCTION')}</span>
+                  {project.clientPlaceholder && (
+                    <>
+                      <span className="text-neutral-500 text-xs font-mono-tech">•</span>
+                      <span className="text-[#d4ff00] text-xs font-mono-tech uppercase">{project.clientPlaceholder}</span>
+                    </>
+                  )}
+                </div>
+                <h1 className="font-display font-black text-2xl sm:text-4xl md:text-5xl text-white tracking-tight uppercase leading-none">
+                  {project.title}
+                </h1>
+                <p className="text-xs sm:text-base font-mono-tech text-neutral-300 max-w-3xl leading-relaxed">
+                  {project.brief}
+                </p>
+              </div>
+
+              {/* PROJECT STATS & TECHNICAL SPECS BAR */}
+              <div className="p-3.5 sm:p-4 rounded-sm bg-neutral-950/90 border border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono-tech">
+                <div className="space-y-0.5 border-r border-white/10 pr-2">
+                  <div className="text-[10px] text-neutral-400 uppercase flex items-center gap-1">
+                    <Film className="w-3 h-3 text-[#d4ff00]" />
+                    <span>{isBengali ? 'মাস্টার রেজোলিউশন' : 'MASTER RESOLUTION'}</span>
+                  </div>
+                  <div className="text-white font-bold font-display text-sm">4K UHD / DCI 2.39</div>
+                  <div className="text-[10px] text-neutral-400">ProRes 4444 XQ // 60 FPS</div>
+                </div>
+
+                <div className="space-y-0.5 border-r border-white/10 pr-2">
+                  <div className="text-[10px] text-neutral-400 uppercase flex items-center gap-1">
+                    <Sliders className="w-3 h-3 text-[#ff007f]" />
+                    <span>{isBengali ? 'কালার সায়েন্স' : 'COLOR SCIENCE'}</span>
+                  </div>
+                  <div className="text-white font-bold font-display text-sm">ACEScc 12-BIT</div>
+                  <div className="text-[10px] text-neutral-400">Custom Film Halation LUT</div>
+                </div>
+
+                <div className="space-y-0.5 border-r border-white/10 pr-2">
+                  <div className="text-[10px] text-neutral-400 uppercase flex items-center gap-1">
+                    <Volume2 className="w-3 h-3 text-[#d4ff00]" />
+                    <span>{isBengali ? 'আবহসঙ্গীত' : 'AUDIO SOUNDSCAPE'}</span>
+                  </div>
+                  <div className="text-white font-bold font-display text-sm">
+                    {project.audioSample?.synthWaveType?.toUpperCase() || 'CYBER'} SUITE
+                  </div>
+                  <div className="text-[10px] text-neutral-400">
+                    {project.audioSample?.bpm ? `${project.audioSample.bpm} BPM // Stereo 24-Bit` : (isBengali ? 'ডায়নামিক সিন্থেসাইজার' : 'Dynamic Synthesizer')}
+                  </div>
+                </div>
+
+                <div className="space-y-0.5">
+                  <div className="text-[10px] text-neutral-400 uppercase flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-[#ff007f]" />
+                    <span>{isBengali ? 'পরিচালনা নৈপুণ্য' : 'DIRECTION CRAFT'}</span>
+                  </div>
+                  <div className="text-[#d4ff00] font-bold font-display text-sm">{isBengali ? '১০০% মানবিক ফিনিশিং' : '100% HUMAN POLISH'}</div>
+                  <div className="text-[10px] text-neutral-400">{isBengali ? 'পরিচালক: বরুণ বিশ্বাস' : 'Directed by Barun Biswas'}</div>
+                </div>
+              </div>
 
         {/* PRIMARY CINEMATIC VIDEO / MEDIA PLAYER STAGE */}
         <div
@@ -296,10 +444,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-1 rounded-sm bg-black/80 backdrop-blur-md border border-white/20 font-mono-tech text-[10px] text-[#d4ff00] font-bold uppercase tracking-wider flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#d4ff00] animate-ping" />
-                {mediaMode === 'video' ? 'CINEMATIC MOTION' : 'HI-RES STILLS'}
+                {mediaMode === 'video' ? (isBengali ? 'সিনেমাটিক মোশন' : 'CINEMATIC MOTION') : (isBengali ? 'হাই-রেজ স্টিল' : 'HI-RES STILLS')}
               </span>
               <span className="px-2 py-1 rounded-sm bg-black/80 backdrop-blur-md border border-white/10 font-mono-tech text-[10px] text-white/70 hidden sm:inline">
-                ORIGINAL MASTER
+                {isBengali ? 'অরিজিনাল মাস্টার' : 'ORIGINAL MASTER'}
               </span>
             </div>
 
@@ -315,7 +463,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 }`}
               >
                 <Film className="w-3 h-3" />
-                <span>VIDEO</span>
+                <span>{isBengali ? 'ভিডিও' : 'VIDEO'}</span>
               </button>
               <button
                 onClick={() => {
@@ -327,7 +475,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 }`}
               >
                 <ImageIcon className="w-3 h-3" />
-                <span>STILLS</span>
+                <span>{isBengali ? 'স্টিলস' : 'STILLS'}</span>
               </button>
             </div>
           </div>
@@ -387,7 +535,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 {/* Audio Synth Track Preset Switcher */}
                 <div className="hidden md:flex items-center gap-1 text-[10px] font-mono-tech text-neutral-400 bg-black/60 px-2 py-1 rounded border border-white/10">
                   <Radio className="w-3 h-3 text-[#d4ff00]" />
-                  <span>SCORE:</span>
+                  <span>{isBengali ? 'স্কোর:' : 'SCORE:'}</span>
                   {(['cyber', 'ambient', 'energetic'] as const).map((type) => (
                     <button
                       key={type}
@@ -406,7 +554,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 <button
                   onClick={handleToggleMute}
                   className="p-2 rounded-sm bg-white/10 hover:bg-white/20 text-neutral-200 hover:text-white transition-colors cursor-pointer"
-                  title={isAudioMuted ? 'Unmute Audio' : 'Mute Audio'}
+                  title={isAudioMuted ? (isBengali ? 'শব্দ চালু করুন' : 'Unmute Audio') : (isBengali ? 'শব্দ বন্ধ করুন' : 'Mute Audio')}
                 >
                   {isAudioMuted ? (
                     <VolumeX className="w-4 h-4 text-[#ff007f]" />
@@ -430,7 +578,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 <button
                   onClick={handleFullscreenToggle}
                   className="p-2 rounded-sm bg-white/10 hover:bg-white/20 text-neutral-200 hover:text-white transition-colors cursor-pointer"
-                  title="Fullscreen"
+                  title={isBengali ? 'পূর্ণস্ক্রিন' : 'Fullscreen'}
                 >
                   {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                 </button>
@@ -444,7 +592,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           <div className="flex items-center justify-between text-xs font-mono-tech text-neutral-400">
             <span className="flex items-center gap-1.5 text-white">
               <Sparkles className="w-3.5 h-3.5 text-[#d4ff00]" />
-              CAMERA PASSES & PRODUCTION ANGLES (CLICK TO AUTOPLAY):
+              {isBengali ? 'ক্যামেরা অ্যাঙ্গেল ও প্রোডাকশন পাস (ক্লিক করে দেখুন):' : 'CAMERA PASSES & PRODUCTION ANGLES (CLICK TO AUTOPLAY):'}
             </span>
             <span>0{activeMediaIdx + 1} / 0{allImages.length}</span>
           </div>
@@ -463,11 +611,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 <img src={img} alt="" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/20 hover:bg-transparent" />
                 <span className="absolute top-1 left-1 px-1 rounded bg-black/80 text-[8px] font-mono-tech text-[#d4ff00]">
-                  PASS 0{idx + 1}
+                  {isBengali ? 'পাস 0' : 'PASS 0'}{idx + 1}
                 </span>
                 <span className="absolute bottom-1 right-1 px-1 bg-black/80 text-[8px] font-mono-tech text-white flex items-center gap-0.5">
                   <Play className="w-2 h-2 fill-current" />
-                  PLAY
+                  {isBengali ? 'প্লে' : 'PLAY'}
                 </span>
               </button>
             ))}
@@ -480,11 +628,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#d4ff00]" />
               <h2 className="font-display font-black text-xl sm:text-2xl text-white tracking-wider uppercase">
-                THE HUMAN PROCESS
+                {isBengali ? 'মানবিক নির্মাণ প্রক্রিয়া' : 'THE HUMAN PROCESS'}
               </h2>
             </div>
             <span className="px-2.5 py-1 rounded bg-[#d4ff00]/15 border border-[#d4ff00]/30 text-[#d4ff00] font-mono-tech text-xs">
-              DIRECTED BY BARUN BISWAS
+              {isBengali ? 'পরিচালক: বরুণ বিশ্বাস' : 'DIRECTED BY BARUN BISWAS'}
             </span>
           </div>
 
@@ -492,7 +640,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             {/* 1. Concept */}
             <div className="space-y-2 p-4 rounded-sm bg-white/[0.02] border border-white/5">
               <div className="text-xs font-mono-tech text-[#ff007f] font-bold uppercase tracking-wider">
-                01. NARRATIVE TREATMENT & EMOTION
+                {isBengali ? '০১. চিত্রনাট্য ও মানবিক দর্শন' : '01. NARRATIVE TREATMENT & EMOTION'}
               </div>
               <p className="text-xs sm:text-sm font-mono-tech text-neutral-300 leading-relaxed">
                 {project.humanProcess.concept}
@@ -502,7 +650,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             {/* 2. AI Workflow */}
             <div className="space-y-2 p-4 rounded-sm bg-white/[0.02] border border-white/5">
               <div className="text-xs font-mono-tech text-[#d4ff00] font-bold uppercase tracking-wider">
-                02. SYNTHESIS & EXPLORATION
+                {isBengali ? '০২. কৃত্রিম বুদ্ধিমত্তা ও শৈল্পিক অন্বেষণ' : '02. SYNTHESIS & EXPLORATION'}
               </div>
               <p className="text-xs sm:text-sm font-mono-tech text-neutral-300 leading-relaxed">
                 {project.humanProcess.aiWorkflow}
@@ -512,7 +660,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             {/* 3. Human Intervention */}
             <div className="space-y-2 p-4 rounded-sm bg-white/[0.02] border border-white/5">
               <div className="text-xs font-mono-tech text-white font-bold uppercase tracking-wider">
-                03. EDITORIAL DIRECTION & FRAME SELECTION
+                {isBengali ? '০৩. সম্পাদনা ও ফ্রেম নির্বাচন' : '03. EDITORIAL DIRECTION & FRAME SELECTION'}
               </div>
               <p className="text-xs sm:text-sm font-mono-tech text-neutral-300 leading-relaxed">
                 {project.humanProcess.humanIntervention}
@@ -522,7 +670,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             {/* 4. Motion & Audio Refinement */}
             <div className="space-y-2 p-4 rounded-sm bg-white/[0.02] border border-white/5">
               <div className="text-xs font-mono-tech text-[#ff007f] font-bold uppercase tracking-wider">
-                04. MOTION POLISH & BESPOKE AUDIO SCORE
+                {isBengali ? '০৪. মোশন পলিশ ও আবহসঙ্গীত' : '04. MOTION POLISH & BESPOKE AUDIO SCORE'}
               </div>
               <p className="text-xs sm:text-sm font-mono-tech text-neutral-300 leading-relaxed">
                 {project.humanProcess.soundOrMotionNotes}
@@ -533,12 +681,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           {/* Final Deliverables Box */}
           <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono-tech text-neutral-400">
             <div>
-              <span className="text-white font-semibold">FINAL PACKAGING: </span>
+              <span className="text-white font-semibold">{isBengali ? 'চূড়ান্ত প্যাকেজিং: ' : 'FINAL PACKAGING: '}</span>
               {project.humanProcess.deliverableStats}
             </div>
             <div className="flex items-center gap-1 text-[#d4ff00]">
               <CheckCircle2 className="w-4 h-4" />
-              <span>DIRECTOR APPROVED</span>
+              <span>{isBengali ? 'পরিচালক কর্তৃক অনুমোদিত' : 'DIRECTOR APPROVED'}</span>
             </div>
           </div>
         </div>
@@ -555,6 +703,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           ))}
         </div>
       </div>
-    </div>
-  );
+    </motion.div>
+  </motion.div>
+)}
+</AnimatePresence>
+);
 };

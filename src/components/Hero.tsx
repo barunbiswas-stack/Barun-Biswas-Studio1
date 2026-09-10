@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowDown, ArrowUpRight, Play, Eye, Sparkles, Layers, Sliders, Music2 } from 'lucide-react';
 import { Project } from '../types';
 import { audioSynth } from '../utils/audioSynth';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HeroProps {
   onSelectProject: (project: Project) => void;
@@ -16,37 +17,38 @@ export const Hero: React.FC<HeroProps> = ({
   onOpenContact,
   onPlayAudioSample
 }) => {
+  const { t, isBengali, isMixed, bi } = useLanguage();
   const [activeVisualIndex, setActiveVisualIndex] = useState(0);
 
   const heroCollageItems = [
     {
-      type: 'COMMERCIAL AD',
+      type: bi('COMMERCIAL AD', 'বাণিজ্যিক বিজ্ঞাপন'),
       title: 'KINETIC VOLT',
-      category: 'ADVERTISING',
+      category: bi('ADVERTISING', 'বিজ্ঞাপন'),
       image: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=900&auto=format&fit=crop',
       accent: 'yellow',
       project: featuredProjects[0]
     },
     {
-      type: 'CINEMATIC VIDEO',
+      type: bi('CINEMATIC VIDEO', 'সিনেমাটিক শর্ট ফিল্ম'),
       title: 'THE LAST CARTOGRAPHER',
-      category: 'SHORT FILM',
+      category: bi('SHORT FILM', 'শর্ট ফিল্ম'),
       image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=900&auto=format&fit=crop',
       accent: 'pink',
       project: featuredProjects[3] || featuredProjects[0]
     },
     {
-      type: 'MUSIC VIDEO',
+      type: bi('MUSIC VIDEO', 'মিউজিক ভিডিও'),
       title: 'NEON HORIZON',
-      category: 'RETROWAVE',
+      category: bi('RETROWAVE', 'রেট্রোওয়েভ'),
       image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=900&auto=format&fit=crop',
       accent: 'yellow',
       project: featuredProjects[1] || featuredProjects[0]
     },
     {
-      type: 'AI ART & PACKAGING',
+      type: bi('AI ART & PACKAGING', 'আর্ট ও পোস্টার'),
       title: 'CYBERNETIC POSTER',
-      category: 'SWISS GRAPHICS',
+      category: bi('SWISS GRAPHICS', 'সুইস গ্রাফিক্স'),
       image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=900&auto=format&fit=crop',
       accent: 'pink',
       project: featuredProjects[4] || featuredProjects[0]
@@ -60,40 +62,72 @@ export const Hero: React.FC<HeroProps> = ({
     >
       {/* Studio Location & Editorial Note */}
       <div className="absolute top-28 left-6 sm:left-12 font-mono-tech text-[10px] text-neutral-400 tracking-widest pointer-events-none hidden md:block">
-        <div>BARUN BISWAS STUDIO</div>
-        <div>CREATIVE DIRECTION & FILM</div>
+        <div>{bi('BARUN BISWAS STUDIO', 'বরুণ বিশ্বাস স্টুডিও')}</div>
+        <div>{bi('CREATIVE DIRECTION & FILM', 'চলচ্চিত্র পরিচালনা ও ভিজ্যুয়াল আর্ট')}</div>
       </div>
 
       <div className="absolute top-28 right-6 sm:right-12 font-mono-tech text-[10px] text-neutral-400 tracking-widest pointer-events-none text-right hidden md:block">
-        <div>AVAILABLE WORLDWIDE</div>
-        <div className="text-[#d4ff00]">OPEN FOR COMMISSIONS 2026</div>
+        <div>{bi('AVAILABLE WORLDWIDE', 'বিশ্বব্যাপী প্রযোজনা উপলব্ধ')}</div>
+        <div className="text-[#d4ff00]">{bi('OPEN FOR COMMISSIONS 2026', '২০২৬ নতুন কাজের বুকিং উন্মুক্ত')}</div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-8 sm:pt-14 relative z-10">
-        {/* Identity Chip */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/15 text-xs font-mono-tech tracking-wider text-neutral-300 mb-6">
-          <span className="w-2 h-2 rounded-full bg-[#d4ff00] animate-pulse" />
-          <span className="text-white font-semibold">BARUN BISWAS</span>
-          <span className="text-neutral-500">•</span>
-          <span className="text-[#d4ff00]">CREATIVE DIRECTOR & VISUAL ARTIST</span>
+        {/* Identity Chip & Philosophy Motto */}
+        <div className="flex flex-wrap items-center gap-2.5 mb-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/15 text-xs font-mono-tech tracking-wider text-neutral-300">
+            <span className="w-2 h-2 rounded-full bg-[#d4ff00] animate-pulse" />
+            <span className="text-white font-semibold">{bi('BARUN BISWAS', 'বরুণ বিশ্বাস')}</span>
+            <span className="text-neutral-500">•</span>
+            <span className="text-[#d4ff00]">{t.hero.roleTitle}</span>
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#d4ff00]/10 border border-[#d4ff00]/30 text-[11px] font-mono-tech text-[#d4ff00]">
+            <span>✦</span>
+            <span>{bi('PHILOSOPHY: SIMPLE IS THE BEST', 'মূলনীতি: সহজতাই শ্রেষ্ঠ (SIMPLE IS THE BEST)')}</span>
+          </div>
         </div>
 
         {/* Main Dramatic Headline */}
         <div className="space-y-1 mb-8">
           <h1 className="font-display font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.94] text-white uppercase select-none">
-            DIRECTING{' '}
-            <span className="text-[#d4ff00]">CINEMATIC</span> STORIES,
-            <br />
-            BOLD ADS &{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-[#ff007f]">
-              FUTURE VISUALS.
-            </span>
+            {isMixed ? (
+              <>
+                DIRECTING{' '}
+                <span className="text-[#d4ff00]">CINEMA //</span>{' '}
+                <span className="text-white">চলচ্চিত্র পরিচালনা</span>
+                <br />
+                BOLD ADS &{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-[#ff007f]">
+                  ভবিষ্যতের দৃশ্যকাব্য।
+                </span>
+              </>
+            ) : isBengali ? (
+              <>
+                <span className="text-white">চলচ্চিত্র</span>{' '}
+                <span className="text-[#d4ff00]">পরিচালনা,</span>
+                <br />
+                সাহসী বিজ্ঞাপন ও{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-[#ff007f]">
+                  ভবিষ্যতের দৃশ্যকাব্য।
+                </span>
+              </>
+            ) : (
+              <>
+                DIRECTING{' '}
+                <span className="text-[#d4ff00]">CINEMATIC</span> STORIES,
+                <br />
+                BOLD ADS &{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-[#ff007f]">
+                  FUTURE VISUALS.
+                </span>
+              </>
+            )}
           </h1>
         </div>
 
         {/* Sub-Headline / Craft Categories */}
         <p className="max-w-3xl text-sm sm:text-base md:text-lg font-mono-tech text-neutral-300 leading-relaxed tracking-wide mb-10">
-          Crafting high-impact commercial campaigns, narrative short films, music videos, and original soundscapes by marrying visionary human storytelling with modern digital synthesis.
+          {t.hero.subheading}
         </p>
 
         {/* Hero CTAs */}
@@ -101,9 +135,9 @@ export const Hero: React.FC<HeroProps> = ({
           <a
             href="#work"
             id="hero-view-work-btn"
-            className="group px-7 py-3.5 bg-[#d4ff00] text-black font-display font-extrabold text-xs sm:text-sm tracking-widest uppercase rounded-sm flex items-center gap-2 hover:bg-white transition-all duration-200 shadow-[0_0_25px_rgba(212,255,0,0.3)] active:scale-95"
+            className="group px-7 py-3.5 bg-[#d4ff00] text-black font-display font-extrabold text-xs sm:text-sm tracking-widest uppercase rounded-sm flex items-center gap-2 hover:bg-white transition-all duration-200 shadow-[0_0_25px_rgba(212,255,0,0.3)] active:scale-95 cursor-pointer"
           >
-            <span>EXPLORE PORTFOLIO</span>
+            <span>{t.hero.exploreWork}</span>
             <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
           </a>
 
@@ -112,7 +146,7 @@ export const Hero: React.FC<HeroProps> = ({
             id="hero-lets-create-btn"
             className="group px-7 py-3.5 bg-transparent border border-white/20 text-white font-display font-extrabold text-xs sm:text-sm tracking-widest uppercase rounded-sm flex items-center gap-2 hover:border-[#ff007f] hover:text-[#ff007f] hover:bg-[#ff007f]/5 transition-all duration-200 active:scale-95 cursor-pointer"
           >
-            <span>START A PROJECT</span>
+            <span>{t.hero.initiateBrief}</span>
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
           </button>
 
@@ -122,7 +156,7 @@ export const Hero: React.FC<HeroProps> = ({
             className="px-4 py-3 bg-neutral-900/90 border border-white/10 text-neutral-300 hover:text-white hover:border-[#d4ff00] rounded-sm text-xs font-mono-tech flex items-center gap-2 transition-colors cursor-pointer"
           >
             <Music2 className="w-3.5 h-3.5 text-[#d4ff00]" />
-            <span>PLAY DIRECTOR SOUNDSCAPE</span>
+            <span>{t.hero.audioPreview}</span>
           </button>
         </div>
 
@@ -133,11 +167,11 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="flex items-center gap-3">
               <span className="w-2.5 h-2.5 bg-[#ff007f] rounded-full inline-block" />
               <span className="font-mono-tech text-xs uppercase tracking-widest text-neutral-300">
-                FEATURED PRODUCTION SHOWCASE
+                {bi('FEATURED PRODUCTION SHOWCASE', 'নির্বাচিত কাজের প্রদর্শনী')}
               </span>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono-tech text-neutral-400">
-              <span>PROJECT:</span>
+              <span>{bi('PROJECT:', 'প্রজেক্ট:')}</span>
               {heroCollageItems.map((item, idx) => (
                 <button
                   key={item.title}
@@ -266,12 +300,16 @@ export const Hero: React.FC<HeroProps> = ({
                 <div className="flex items-center justify-between text-neutral-300">
                   <span className="flex items-center gap-1 text-[#d4ff00]">
                     <Layers className="w-3.5 h-3.5" />
-                    DIRECTOR'S STUDIO:
+                    {bi("DIRECTOR'S STUDIO:", 'পরিচালকের স্টুডিও:')}
                   </span>
-                  <span className="text-white">BARUN BISWAS</span>
+                  <span className="text-white">{bi('BARUN BISWAS', 'বরুণ বিশ্বাস')}</span>
                 </div>
                 <div className="text-neutral-400 text-[10px] leading-tight">
-                  Film Direction • Creative Treatment • Original Audio Score • DaVinci Color Science
+                  {isMixed
+                    ? 'Film Direction // চলচ্চিত্র পরিচালনা • Creative Treatment // সৃজনশীল ট্রিটমেন্ট • Original Sound // মৌলিক আবহসঙ্গীত'
+                    : isBengali
+                    ? 'চলচ্চিত্র পরিচালনা • সৃজনশীল ট্রিটমেন্ট • মৌলিক আবহসঙ্গীত • ডাভিঞ্চি কালার সায়েন্স'
+                    : 'Film Direction • Creative Treatment • Original Audio Score • DaVinci Color Science'}
                 </div>
               </div>
             </div>
@@ -282,18 +320,46 @@ export const Hero: React.FC<HeroProps> = ({
       {/* Marquee Statement */}
       <div className="w-full mt-12 py-3 bg-neutral-950 border-y border-white/10 overflow-hidden">
         <div className="animate-marquee whitespace-nowrap flex items-center gap-8 font-mono-tech text-xs tracking-widest uppercase text-neutral-400">
-          <span>CINEMATIC FILM DIRECTION</span>
-          <span className="text-[#d4ff00]">✦</span>
-          <span>COMMERCIAL ADVERTISING THAT COMMANDS ATTENTION</span>
-          <span className="text-[#ff007f]">✦</span>
-          <span>ORIGINAL MUSIC VIDEOS & BESPOKE AUDIO SOUNDSCAPES</span>
-          <span className="text-[#d4ff00]">✦</span>
-          <span>HIGH-RETENTION EDITORIAL REELS & KEY ART</span>
-          <span className="text-[#ff007f]">✦</span>
-          <span>DIRECTED & CRAFTED BY BARUN BISWAS</span>
-          <span className="text-[#d4ff00]">✦</span>
-          <span>CINEMATIC FILM DIRECTION</span>
-          <span className="text-[#ff007f]">✦</span>
+          {isMixed ? (
+            <>
+              <span>CINEMATIC FILM DIRECTION // সিনেমাটিক চলচ্চিত্র পরিচালনা</span>
+              <span className="text-[#d4ff00]">✦</span>
+              <span>SIMPLE IS THE BEST // অপ্রয়োজনীয় জটিলতামুক্ত নির্মাণ</span>
+              <span className="text-[#ff007f]">✦</span>
+              <span>HIGH-IMPACT ADVERTISING // ব্র্যান্ড বিজ্ঞাপন ও ভিজ্যুয়াল আর্ট</span>
+              <span className="text-[#d4ff00]">✦</span>
+              <span>BESPOKE SOUNDSCAPES // মৌলিক আবহসঙ্গীত ও সাউন্ড ডিজাইন</span>
+              <span className="text-[#ff007f]">✦</span>
+              <span>DIRECTED BY BARUN BISWAS // পরিচালনায়: বরুণ বিশ্বাস</span>
+              <span className="text-[#d4ff00]">✦</span>
+            </>
+          ) : isBengali ? (
+            <>
+              <span>সিনেমাটিক চলচ্চিত্র পরিচালনা</span>
+              <span className="text-[#d4ff00]">✦</span>
+              <span>সহজতাই শ্রেষ্ঠ — অপ্রয়োজনীয় জটিলতামুক্ত নির্মাণ</span>
+              <span className="text-[#ff007f]">✦</span>
+              <span>মনোযোগ আকর্ষক আন্তর্জাতিক ব্র্যান্ড বিজ্ঞাপন</span>
+              <span className="text-[#d4ff00]">✦</span>
+              <span>কাস্টম অ্যানালগ মিউজিক ও বাইনোরাল সাউন্ড ডিজাইন</span>
+              <span className="text-[#ff007f]">✦</span>
+              <span>পরিচালনায়: বরুণ বিশ্বাস</span>
+              <span className="text-[#d4ff00]">✦</span>
+            </>
+          ) : (
+            <>
+              <span>CINEMATIC FILM DIRECTION</span>
+              <span className="text-[#d4ff00]">✦</span>
+              <span>COMMERCIAL ADVERTISING THAT COMMANDS ATTENTION</span>
+              <span className="text-[#ff007f]">✦</span>
+              <span>ORIGINAL MUSIC VIDEOS & BESPOKE AUDIO SOUNDSCAPES</span>
+              <span className="text-[#d4ff00]">✦</span>
+              <span>PHILOSOPHY: SIMPLE IS THE BEST</span>
+              <span className="text-[#ff007f]">✦</span>
+              <span>DIRECTED & CRAFTED BY BARUN BISWAS</span>
+              <span className="text-[#d4ff00]">✦</span>
+            </>
+          )}
         </div>
       </div>
     </section>

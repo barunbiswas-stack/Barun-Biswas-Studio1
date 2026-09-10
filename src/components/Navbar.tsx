@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Menu, X, ArrowUpRight, Sparkles, Disc3 } from 'lucide-react';
+import { Volume2, VolumeX, Menu, X, ArrowUpRight, Sparkles, Disc3, Globe } from 'lucide-react';
 import { audioSynth } from '../utils/audioSynth';
+import { useLanguage } from '../context/LanguageContext';
 
 interface NavbarProps {
   onOpenContact: () => void;
@@ -8,6 +9,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
+  const { language, setLanguage, t, isBengali } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
@@ -30,19 +32,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
     };
   }, []);
 
-  const toggleSoundtrack = () => {
+  const toggleSoundtrack = async () => {
+    await audioSynth.unlock();
     audioSynth.playSfx('click');
     audioSynth.togglePlay('cyber');
   };
 
   const navLinks = [
-    { label: 'WORK', href: '#work' },
-    { label: 'SERVICES', href: '#services' },
-    { label: 'PROCESS', href: '#process' },
-    { label: 'ADS', href: '#advertising' },
-    { label: 'MUSIC & VIDEO', href: '#music' },
-    { label: 'CREATIVE LAB', href: '#lab' },
-    { label: 'ABOUT', href: '#about' },
+    { label: t.nav.slideshow, href: '#slideshow' },
+    { label: t.nav.work, href: '#work' },
+    { label: t.nav.timeline, href: '#timeline' },
+    { label: t.nav.stats, href: '#stats' },
+    { label: t.nav.services, href: '#services' },
+    { label: t.nav.process, href: '#process' },
+    { label: t.nav.ads, href: '#advertising' },
+    { label: t.nav.music, href: '#music' },
+    { label: t.nav.lab, href: '#lab' },
+    { label: t.nav.about, href: '#about' },
   ];
 
   return (
@@ -96,8 +102,52 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
             ))}
           </nav>
 
-          {/* Action Buttons: Sound Preview & Let's Create */}
-          <div className="flex items-center gap-3">
+          {/* Action Buttons: Language Switcher, Sound Preview & Let's Create */}
+          <div className="flex items-center gap-2.5">
+            {/* Multi-language Switcher: MIXED (বাংলা+EN) | EN | বাংলা */}
+            <div
+              className="flex items-center rounded-sm border border-white/15 bg-neutral-900/90 p-0.5 font-mono-tech text-xs shadow-inner"
+              role="group"
+              aria-label="Language selection"
+            >
+              <button
+                type="button"
+                onClick={() => setLanguage('mixed')}
+                className={`px-2 py-1 rounded-xs transition-all font-semibold cursor-pointer text-[10px] sm:text-[11px] ${
+                  language === 'mixed'
+                    ? 'bg-[#d4ff00] text-black font-bold shadow-[0_0_8px_rgba(212,255,0,0.5)]'
+                    : 'text-neutral-400 hover:text-white'
+                }`}
+                title="Bilingual Display: Bengali & English mixed"
+              >
+                বাংলা+EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                className={`px-2 py-1 rounded-xs transition-all font-semibold cursor-pointer text-[10px] sm:text-[11px] ${
+                  language === 'en'
+                    ? 'bg-[#d4ff00] text-black font-bold shadow-[0_0_8px_rgba(212,255,0,0.5)]'
+                    : 'text-neutral-400 hover:text-white'
+                }`}
+                title="Switch to English only"
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('bn')}
+                className={`px-2 py-1 rounded-xs transition-all font-semibold cursor-pointer text-[10px] sm:text-[11px] font-bengali ${
+                  language === 'bn'
+                    ? 'bg-[#d4ff00] text-black font-bold shadow-[0_0_8px_rgba(212,255,0,0.5)]'
+                    : 'text-neutral-400 hover:text-white'
+                }`}
+                title="শুধুমাত্র বাংলা ভাষায় দেখুন"
+              >
+                বাংলা
+              </button>
+            </div>
+
             {/* Audio Synth Toggle */}
             <button
               onClick={toggleSoundtrack}
@@ -112,15 +162,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
               {isAudioPlaying ? (
                 <>
                   <Disc3 className="w-3.5 h-3.5 text-[#ff007f] animate-spin" />
-                  <span className="hidden sm:inline text-[11px] text-[#ff007f] font-semibold">
-                    SOUNDSCAPE: {activeTrack?.toUpperCase()}
+                  <span className="hidden md:inline text-[11px] text-[#ff007f] font-semibold">
+                    {activeTrack?.toUpperCase()}
                   </span>
                   <Volume2 className="w-3.5 h-3.5 text-white" />
                 </>
               ) : (
                 <>
                   <VolumeX className="w-3.5 h-3.5 text-neutral-400" />
-                  <span className="hidden sm:inline text-[11px]">AMBIENT SOUND</span>
+                  <span className="hidden md:inline text-[11px]">{isBengali ? 'সাউন্ড' : 'SOUND'}</span>
                 </>
               )}
             </button>
@@ -129,9 +179,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
             <button
               onClick={onOpenContact}
               id="nav-lets-create-cta"
-              className="relative group overflow-hidden px-4 sm:px-5 py-2 rounded-sm bg-[#d4ff00] text-black font-display font-extrabold text-xs tracking-wider uppercase transition-all duration-200 hover:bg-white hover:shadow-[0_0_20px_rgba(212,255,0,0.5)] active:scale-95 flex items-center gap-1.5 cursor-pointer"
+              className="relative group overflow-hidden px-3.5 sm:px-4 py-2 rounded-sm bg-[#d4ff00] text-black font-display font-extrabold text-xs tracking-wider uppercase transition-all duration-200 hover:bg-white hover:shadow-[0_0_20px_rgba(212,255,0,0.5)] active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0"
             >
-              <span>LET'S CREATE</span>
+              <span>{isBengali ? 'বার্তা পাঠান' : "LET'S CREATE"}</span>
               <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
 
@@ -155,8 +205,46 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact }) => {
           className="fixed inset-0 z-40 bg-[#09090c]/98 backdrop-blur-xl xl:hidden pt-24 px-6 flex flex-col justify-between pb-10 border-b border-white/10"
         >
           <div className="flex flex-col gap-5">
-            <div className="text-[11px] font-mono-tech text-neutral-500 uppercase tracking-widest pb-2 border-b border-white/10">
-              NAVIGATION // DIRECTORY
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <span className="text-[11px] font-mono-tech text-neutral-500 uppercase tracking-widest">
+                NAVIGATION // DIRECTORY
+              </span>
+              {/* Mobile Language Switcher */}
+              <div className="flex items-center rounded-sm border border-white/20 bg-neutral-900 p-0.5 font-mono-tech text-xs">
+                <button
+                  type="button"
+                  onClick={() => setLanguage('mixed')}
+                  className={`px-2 py-1 rounded-xs transition-all font-semibold ${
+                    language === 'mixed'
+                      ? 'bg-[#d4ff00] text-black font-bold'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  বাংলা+EN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('en')}
+                  className={`px-2 py-1 rounded-xs transition-all font-semibold ${
+                    language === 'en'
+                      ? 'bg-[#d4ff00] text-black font-bold'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  EN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage('bn')}
+                  className={`px-2 py-1 rounded-xs transition-all font-semibold ${
+                    language === 'bn'
+                      ? 'bg-[#d4ff00] text-black font-bold'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  বাংলা
+                </button>
+              </div>
             </div>
             {navLinks.map((link) => (
               <a

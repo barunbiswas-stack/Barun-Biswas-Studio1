@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { SERVICES_DATA } from '../data/portfolioData';
 import { ServiceItem } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ServicesSectionProps {
   onSelectCategoryFilter: (category: string) => void;
@@ -24,6 +25,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   onSelectCategoryFilter,
   onOpenContact
 }) => {
+  const { t, isBengali, bi } = useLanguage();
   const [activeServiceId, setActiveServiceId] = useState<string>(SERVICES_DATA[0].id);
 
   const getServiceIcon = (name: string) => {
@@ -50,14 +52,14 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
           <div>
             <div className="flex items-center gap-2 text-xs font-mono-tech uppercase tracking-widest text-[#ff007f] mb-3">
               <span className="w-1.5 h-1.5 bg-[#ff007f] rounded-full" />
-              <span>PRODUCTION SERVICES</span>
+              <span>{t.services.label}</span>
             </div>
             <h2 className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white tracking-tight uppercase leading-none">
-              WHAT I <span className="text-[#d4ff00]">CREATE</span>
+              {t.services.titleMain} <span className="text-[#d4ff00]">{t.services.titleAccent}</span>
             </h2>
           </div>
           <p className="max-w-md text-xs sm:text-sm font-mono-tech text-neutral-400">
-            From initial narrative treatment to final frame delivery. Every service combines computational AI power with meticulous human art direction.
+            {t.services.subtitle}
           </p>
         </div>
 
@@ -140,10 +142,10 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-white/10">
                   <span className="font-mono-tech text-xs text-[#ff007f] uppercase tracking-wider">
-                    PRODUCTION BREAKDOWN
+                    {bi('PRODUCTION BREAKDOWN', 'প্রযোজনা রূপরেখা')}
                   </span>
                   <span className="font-mono-tech text-xs text-neutral-400">
-                    DIRECTOR OVERVIEW
+                    {bi('DIRECTOR OVERVIEW', 'পরিচালকের দৃষ্টিভঙ্গি')}
                   </span>
                 </div>
 
@@ -155,7 +157,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                 <div className="space-y-2 pt-2">
                   <div className="font-mono-tech text-[11px] text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-[#d4ff00]" />
-                    KEY DELIVERABLES:
+                    {bi('KEY DELIVERABLES:', 'প্রধান ডেলিভারেবলস:')}
                   </div>
                   <div className="space-y-1.5">
                     {activeService.deliverables.map((item) => (
@@ -173,13 +175,13 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                     onClick={() => onOpenContact(activeService.title)}
                     className="flex-1 py-3 px-4 bg-[#d4ff00] text-black font-display font-extrabold text-xs tracking-wider uppercase rounded-sm hover:bg-white transition-colors cursor-pointer text-center"
                   >
-                    COMMISSION THIS SERVICE
+                    {bi('COMMISSION THIS SERVICE', 'এই সেবাটি কমিশন করুন')}
                   </button>
                   <a
                     href="#work"
                     className="py-3 px-4 bg-white/5 border border-white/10 text-white hover:border-white/30 text-xs font-mono-tech tracking-wider uppercase rounded-sm text-center"
                   >
-                    SEE SAMPLES
+                    {bi('SEE SAMPLES', 'নমুনা দেখুন')}
                   </a>
                 </div>
               </div>

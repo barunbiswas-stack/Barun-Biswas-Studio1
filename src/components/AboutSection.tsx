@@ -1,8 +1,11 @@
 import React from 'react';
 import { User, Sparkles, Terminal, Code, Cpu, Film, Palette, Music, Check } from 'lucide-react';
 import { TOOL_CATEGORIES } from '../data/portfolioData';
+import { useLanguage } from '../context/LanguageContext';
 
 export const AboutSection: React.FC = () => {
+  const { t, isBengali, isMixed, bi } = useLanguage();
+
   return (
     <section id="about" className="py-24 border-b border-white/10 relative bg-[#09090c]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -11,14 +14,14 @@ export const AboutSection: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 text-xs font-mono-tech uppercase tracking-widest text-[#d4ff00] mb-3">
               <span className="w-1.5 h-1.5 bg-[#d4ff00] rounded-full" />
-              <span>THE DIRECTOR</span>
+              <span>{t.about.label}</span>
             </div>
             <h2 className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white tracking-tight uppercase leading-none">
-              ABOUT <span className="text-[#ff007f]">BARUN BISWAS</span>
+              {t.about.titleMain} <span className="text-[#ff007f]">{t.about.titleAccent}</span>
             </h2>
           </div>
           <div className="text-xs sm:text-sm font-mono-tech text-neutral-400 max-w-md">
-            Independent creative director operating at the convergence of generative neural systems, cinematic storytelling, and tactile design.
+            {t.about.bioParagraph1}
           </div>
         </div>
 
@@ -36,11 +39,11 @@ export const AboutSection: React.FC = () => {
 
               <div className="absolute bottom-4 left-4 right-4 p-3 rounded-sm bg-black/85 backdrop-blur-md border border-white/10 font-mono-tech text-xs space-y-1">
                 <div className="flex items-center justify-between text-white font-bold">
-                  <span>BARUN BISWAS</span>
-                  <span className="text-[#d4ff00]">DIRECTOR</span>
+                  <span>{bi('BARUN BISWAS', 'বরুণ বিশ্বাস')}</span>
+                  <span className="text-[#d4ff00]">{bi('DIRECTOR', 'চলচ্চিত্র পরিচালক')}</span>
                 </div>
                 <div className="text-[11px] text-neutral-400">
-                  Concept • Direction • Narrative • Sound
+                  {bi('Concept • Direction • Narrative • Sound', 'ধারণা • পরিচালনা • ন্যারেটিভ • সঙ্গীত')}
                 </div>
               </div>
             </div>
@@ -48,16 +51,16 @@ export const AboutSection: React.FC = () => {
             {/* Quick Director Specs */}
             <div className="p-4 rounded-sm bg-neutral-950 border border-white/10 font-mono-tech text-xs space-y-2 text-neutral-400">
               <div className="flex justify-between pb-1 border-b border-white/5">
-                <span>LOCATION:</span>
-                <span className="text-white">GLOBAL / REMOTE STUDIO</span>
+                <span>{bi('LOCATION:', 'অবস্থান:')}</span>
+                <span className="text-white">{bi('GLOBAL / REMOTE STUDIO', 'বিশ্বব্যাপী / রিমোট স্টুডিও')}</span>
               </div>
               <div className="flex justify-between pb-1 border-b border-white/5">
-                <span>SPECIALIZATION:</span>
-                <span className="text-[#d4ff00]">FULL-PIPELINE CREATIVE DIRECTION</span>
+                <span>{bi('SPECIALIZATION:', 'দক্ষতা:')}</span>
+                <span className="text-[#d4ff00]">{bi('FULL-PIPELINE CREATIVE DIRECTION', 'সম্পূর্ণ সিনেমাটিক সৃজনশীল পরিচালনা')}</span>
               </div>
               <div className="flex justify-between">
-                <span>AVAILABILITY:</span>
-                <span className="text-white">OPEN FOR COMMISSIONS</span>
+                <span>{bi('AVAILABILITY:', 'প্রাপ্যতা:')}</span>
+                <span className="text-white">{bi('OPEN FOR COMMISSIONS', 'নতুন কাজের জন্য প্রস্তুত')}</span>
               </div>
             </div>
           </div>
@@ -66,40 +69,47 @@ export const AboutSection: React.FC = () => {
           <div className="lg:col-span-8 space-y-6">
             <div className="p-6 sm:p-8 rounded-sm bg-neutral-950 border border-white/15 space-y-6">
               <div className="text-xs font-mono-tech uppercase tracking-widest text-[#ff007f] font-bold">
-                DIRECTOR'S STATEMENT & APPROACH
+                {bi("DIRECTOR'S STATEMENT & APPROACH", 'পরিচালকের দৃষ্টিভঙ্গি ও মূলনীতি')}
               </div>
 
-              <blockquote className="font-display font-black text-2xl sm:text-3xl md:text-4xl text-white tracking-tight uppercase leading-snug border-l-4 border-[#d4ff00] pl-6">
-                “I explore the convergence where human emotion, narrative storytelling, and digital synthesis meet. Technology expands what can be envisioned, but the artistic taste, narrative soul, and final master are directed entirely by human hands.”
+              <blockquote className="font-display font-black text-xl sm:text-2xl md:text-3xl text-white tracking-tight uppercase leading-snug border-l-4 border-[#d4ff00] pl-6">
+                {isMixed
+                  ? '“I explore where human emotion, narrative storytelling, and digital synthesis meet. // আবেগ, গল্প ও প্রযুক্তির সমন্বয় — সৃজনশীল নান্দনিকতা ও চলচ্চিত্রের প্রাণ মানুষের হাতের স্পর্শেই জন্ম নেয়।”'
+                  : isBengali
+                  ? '“আবেগ, গল্প ও প্রযুক্তির মেলবন্ধন — প্রযুক্তি কল্পনার সীমানা বৃদ্ধি করে, তবে শৈল্পিক স্বাদ এবং চলচ্চিত্রের প্রাণ সম্পূর্ণ মানুষের হাতের স্পর্শেই জীবন্ত হয়।”'
+                  : '“I explore the convergence where human emotion, narrative storytelling, and digital synthesis meet. Technology expands what can be envisioned, but the artistic taste, narrative soul, and final master are directed entirely by human hands.”'}
               </blockquote>
 
               <div className="space-y-4 text-xs sm:text-sm font-mono-tech text-neutral-300 leading-relaxed pt-2">
                 <p>
-                  We are living through a historic transformation in creative production. What once required a multi-million-dollar production house can now be realized by a single visionary director with uncompromising standards and mastery of modern generative tools.
-                </p>
-                <p>
-                  However, technology without taste produces disposable noise. Every project from my studio is authored with intentional narrative hooks, bespoke acoustic compositions, and meticulous editorial color finishing.
+                  {t.about.bioParagraph2}
                 </p>
               </div>
 
               {/* Core Pillars */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10">
                 <div className="space-y-1">
-                  <span className="text-xs font-mono-tech text-[#d4ff00] font-bold">01. NARRATIVE VISION</span>
+                  <span className="text-xs font-mono-tech text-[#d4ff00] font-bold">
+                    {bi('01. NARRATIVE VISION', '০১. গল্পের গভীরতা')}
+                  </span>
                   <p className="text-[11px] font-mono-tech text-neutral-400">
-                    No visual exploration begins until the emotional core and story arc are crystal clear.
+                    {bi('Emotional core and story arc are crystal clear before any visual exploration begins.', 'গল্পের গভীর আবেগ এবং মূল চরিত্র স্পষ্ট না হওয়া পর্যন্ত কোনো দৃশ্য নির্মাণ শুরু হয় না।')}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-xs font-mono-tech text-[#ff007f] font-bold">02. EDITORIAL TASTE</span>
+                  <span className="text-xs font-mono-tech text-[#ff007f] font-bold">
+                    {bi('02. EDITORIAL TASTE', '০২. শৈল্পিক রুচি')}
+                  </span>
                   <p className="text-[11px] font-mono-tech text-neutral-400">
-                    Every pixel, cut, and audio transient is shaped, timed, and mastered by human hands.
+                    {bi('Every cut, color grade, and audio transient is shaped, timed, and mastered by human hands.', 'প্রতিটি ফ্রেম, রঙের বিন্যাস এবং শব্দের ওঠানামা মানুষের সতর্ক পরিচালনায় নিখুঁত করা হয়।')}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-xs font-mono-tech text-white font-bold">03. CULTURAL IMPACT</span>
+                  <span className="text-xs font-mono-tech text-white font-bold">
+                    {bi('03. CULTURAL IMPACT', '০৩. সাংস্কৃতিক প্রভাব')}
+                  </span>
                   <p className="text-[11px] font-mono-tech text-neutral-400">
-                    Rejecting generic templates in favor of cinematic work that commands immediate attention.
+                    {bi('Rejecting generic templates in favor of cinematic work that commands immediate attention.', 'গতানুগতিক টেমপ্লেট বর্জন করে এমন ভিজ্যুয়াল যা দর্শকের গভীর মনোযোগ আকর্ষণ করে।')}
                   </p>
                 </div>
               </div>
@@ -112,10 +122,10 @@ export const AboutSection: React.FC = () => {
           <div className="flex items-center justify-between pb-4 border-b border-white/10">
             <div>
               <div className="text-xs font-mono-tech uppercase tracking-widest text-[#d4ff00] mb-1">
-                PRODUCTION ECOSYSTEM
+                {bi('PRODUCTION ECOSYSTEM', 'প্রযোজনা ইকোসিস্টেম')}
               </div>
               <h3 className="font-display font-black text-2xl sm:text-3xl text-white uppercase tracking-wider">
-                CREATIVE STACK & PRODUCTION TOOLS
+                {t.about.creativeArsenal}
               </h3>
             </div>
           </div>
