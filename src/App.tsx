@@ -74,22 +74,18 @@ function PortfolioInner() {
         if (e.key === '1') {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (e.key === '2') {
-          document.getElementById('slideshow')?.scrollIntoView({ behavior: 'smooth' });
+          document.getElementById('introduction')?.scrollIntoView({ behavior: 'smooth' });
         } else if (e.key === '3') {
           document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
         } else if (e.key === '4') {
-          document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' });
-        } else if (e.key === '5') {
-          document.getElementById('stats')?.scrollIntoView({ behavior: 'smooth' });
-        } else if (e.key === '6') {
           document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-        } else if (e.key === '7') {
+        } else if (e.key === '5') {
           document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' });
-        } else if (e.key === '8') {
-          document.getElementById('advertising')?.scrollIntoView({ behavior: 'smooth' });
-        } else if (e.key === '9') {
-          document.getElementById('music')?.scrollIntoView({ behavior: 'smooth' });
-        } else if (e.key === '0') {
+        } else if (e.key === '6') {
+          document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' });
+        } else if (e.key === '7') {
+          document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+        } else if (e.key === '8' || e.key === '0') {
           document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
         } else if (e.key === 'm' || e.key === 'M') {
           audioSynth.toggleMute();
@@ -125,11 +121,11 @@ function PortfolioInner() {
   );
 
   return (
-    <div className="min-h-screen bg-[#09090c] text-white selection:bg-[#d4ff00] selection:text-black relative bg-grain">
+    <div className="min-h-screen bg-[#09090c] text-white selection:bg-[#d4ff00] selection:text-black relative bg-grain overflow-x-hidden">
       {/* 0. Top Scroll Progress Indicator */}
       <ProgressBar />
 
-      {/* Floating Section Navigation Rail / Bar */}
+      {/* Floating Section Navigation Rail / Bar (Desktop Only) */}
       <SectionBar />
 
       {/* Interactive Background Canvas VFX (Particles, Stardust, Light Streaks) */}
@@ -150,30 +146,36 @@ function PortfolioInner() {
         {/* 2. Personal Manifesto & "Simple is the Best" Philosophy */}
         <Introduction />
 
-        {/* 3. Featured Project Slideshow */}
-        <ProjectSlideshow
-          projects={PORTFOLIO_PROJECTS}
-          onSelectProject={(p) => setSelectedProject(p)}
-          onPlayAudioTrack={handlePlayAudio}
-        />
+        {/* 3. Featured Work & Production Showcases (All Work Hub) */}
+        <div id="work" className="scroll-mt-16">
+          {/* Featured Project Slideshow */}
+          <ProjectSlideshow
+            projects={PORTFOLIO_PROJECTS}
+            onSelectProject={(p) => setSelectedProject(p)}
+            onPlayAudioTrack={handlePlayAudio}
+          />
 
-        {/* 4. Featured Work (Asymmetrical Editorial Masonry Grid) */}
-        <FeaturedWork
-          onSelectProject={(p) => setSelectedProject(p)}
-          onPlayAudioTrack={handlePlayAudio}
-        />
+          {/* Featured Work (Asymmetrical Editorial Masonry Grid with Filters) */}
+          <FeaturedWork
+            onSelectProject={(p) => setSelectedProject(p)}
+            onPlayAudioTrack={handlePlayAudio}
+          />
 
-        {/* 5. Chronological Projects Timeline & Milestones */}
-        <ProjectTimeline
-          projects={PORTFOLIO_PROJECTS}
-          onSelectProject={(p) => setSelectedProject(p)}
-          onPlayAudioTrack={handlePlayAudio}
-        />
+          {/* Commercial Advertising Showcase */}
+          <AdvertisingShowcase
+            onSelectProject={(p) => setSelectedProject(p)}
+            adProjects={adProjects}
+            onOpenContact={handleOpenContact}
+          />
 
-        {/* 6. Production Benchmarks & Project Stats */}
-        <ProjectStats />
+          {/* Music + Music Video Immersive Showcase & Real-Time Waveform */}
+          <MusicSection
+            onSelectProject={(p) => setSelectedProject(p)}
+            musicProjects={musicProjects}
+          />
+        </div>
 
-        {/* 7. Interactive Services Section */}
+        {/* 4. Interactive Services & Commission Packages */}
         <ServicesSection
           onSelectCategoryFilter={(_category) => {
             const el = document.getElementById('work');
@@ -182,34 +184,33 @@ function PortfolioInner() {
           onOpenContact={handleOpenContact}
         />
 
-        {/* 8. 5-Step AI + Human Creative Process */}
-        <ProcessSection />
+        {/* 5. 5-Step AI + Human Creative Process & Lab */}
+        <div id="process" className="scroll-mt-16">
+          <ProcessSection />
+          {/* The Creative Lab (VFX bench, shaders, parameters) */}
+          <CreativeLab />
+        </div>
 
-        {/* 9. Commercial Advertising Showcase */}
-        <AdvertisingShowcase
-          onSelectProject={(p) => setSelectedProject(p)}
-          adProjects={adProjects}
-          onOpenContact={handleOpenContact}
-        />
+        {/* 6. Chronological Projects Timeline & Milestones + Stats */}
+        <div id="timeline" className="scroll-mt-16">
+          <ProjectTimeline
+            projects={PORTFOLIO_PROJECTS}
+            onSelectProject={(p) => setSelectedProject(p)}
+            onPlayAudioTrack={handlePlayAudio}
+          />
+          {/* Production Benchmarks & Project Stats */}
+          <ProjectStats />
+        </div>
 
-        {/* 10. Music + Music Video Immersive Showcase */}
-        <MusicSection
-          onSelectProject={(p) => setSelectedProject(p)}
-          musicProjects={musicProjects}
-        />
-
-        {/* 11. The Creative Lab (VFX bench, shaders, parameters) */}
-        <CreativeLab />
-
-        {/* 12. Human-Focused About & Technology Matrix */}
+        {/* 7. Human-Focused About & Technology Matrix */}
         <AboutSection />
 
-        {/* 13. Contact & Project Brief Transmission */}
+        {/* 8. Contact & Project Brief Transmission */}
         <ContactSection preselectedService={prefilledService} />
       </main>
 
-      {/* Floating Bottom Quick Control Helper */}
-      <aside aria-label="Audio & Keyboard Controls" className="fixed bottom-4 right-4 z-40 flex items-center gap-2">
+      {/* Floating Bottom Quick Control Helper (Desktop & Tablet) */}
+      <aside aria-label="Audio & Keyboard Controls" className="fixed bottom-4 right-4 z-40 hidden sm:flex items-center gap-2">
         <button
           onClick={() => audioSynth.testSound()}
           className="px-3 py-1.5 rounded-sm bg-neutral-900/90 border border-white/20 hover:border-[#d4ff00] text-xs font-mono-tech text-neutral-300 hover:text-white flex items-center gap-1.5 backdrop-blur-md shadow-lg cursor-pointer transition-colors"

@@ -97,7 +97,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
             const isLarge = index % 3 === 0;
             const isMedium = index % 3 === 1;
             const colSpan = isLarge ? 'md:col-span-8' : isMedium ? 'md:col-span-4' : 'md:col-span-6';
-            const minHeight = isLarge ? 'min-h-[460px]' : 'min-h-[380px]';
+            const minHeight = isLarge ? 'min-h-[360px] sm:min-h-[460px]' : 'min-h-[300px] sm:min-h-[380px]';
 
             return (
               <div

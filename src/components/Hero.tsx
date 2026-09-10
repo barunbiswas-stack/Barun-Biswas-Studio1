@@ -89,7 +89,7 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* Main Dramatic Headline */}
         <div className="space-y-1 mb-8">
-          <h1 className="font-display font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.94] text-white uppercase select-none">
+          <h1 className="font-display font-black text-3xl sm:text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[0.96] text-white uppercase select-none break-words">
             {isMixed ? (
               <>
                 DIRECTING{' '}

@@ -141,36 +141,32 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">1</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'প্রজেক্ট স্লাইডশো' : 'Project Slideshow'}</span>
+                    <span className="text-neutral-300">{isBengali ? 'মূলনীতি / দর্শন' : 'Manifesto & Vision'}</span>
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">2</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'নির্বাচিত কাজসমূহ' : 'Featured Work'}</span>
+                    <span className="text-neutral-300">{isBengali ? 'নির্বাচিত কাজসমূহ' : 'Featured Work Hub'}</span>
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">3</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'প্রজেক্ট টাইমলাইন' : 'Projects Timeline'}</span>
+                    <span className="text-neutral-300">{isBengali ? 'সার্ভিস ও প্যাকেজ' : 'Services & Commission'}</span>
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">4</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'প্রজেক্ট পরিসংখ্যান' : 'Project Statistics'}</span>
+                    <span className="text-neutral-300">{isBengali ? 'কর্মপদ্ধতি ও ল্যাব' : 'Process & Creative Lab'}</span>
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">5</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'সার্ভিস ও প্যাকেজ' : 'Services & Pricing'}</span>
+                    <span className="text-neutral-300">{isBengali ? 'টাইমলাইন ও পরিসংখ্যান' : 'Timeline & Statistics'}</span>
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">6</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'ভাষা পরিবর্তন (বাংলা / EN)' : 'Toggle Language (EN / BN)'}</span>
-                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">L</kbd>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'সাউন্ড টেস্ট' : 'Test Audio Engine'}</span>
-                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">T</kbd>
+                    <span className="text-neutral-300">{isBengali ? 'পরিচালক পরিচয়' : 'About Director'}</span>
+                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">7</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
                     <span className="text-neutral-300">{isBengali ? 'যোগাযোগ / ব্রিফ' : 'Contact / Brief'}</span>
-                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">0</kbd>
+                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">8 / 0</kbd>
                   </div>
                 </div>
               </div>
