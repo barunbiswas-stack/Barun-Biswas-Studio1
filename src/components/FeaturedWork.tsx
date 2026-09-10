@@ -14,17 +14,17 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
   onSelectProject,
   onPlayAudioTrack
 }) => {
-  const { t, isBengali } = useLanguage();
+  const { t, isBengali, isMixed, bi } = useLanguage();
   const [selectedFilter, setSelectedFilter] = useState<CategoryType>('ALL');
 
   const filterCategories: { label: string; value: CategoryType }[] = [
-    { label: isBengali ? 'সকল কাজ' : 'ALL WORK', value: 'ALL' },
-    { label: isBengali ? 'বিজ্ঞাপন ও কমার্শিয়াল' : 'ADS & COMMERCIALS', value: 'ADS' },
-    { label: isBengali ? 'মিউজিক ও সাউন্ড' : 'AI MUSIC', value: 'MUSIC' },
-    { label: isBengali ? 'সিনেমাটিক ভিডিও' : 'CINEMATIC VIDEO', value: 'VIDEO' },
-    { label: isBengali ? 'গ্রাফিক্স ও পোস্টার' : 'GRAPHICS & POSTERS', value: 'GRAPHICS' },
-    { label: isBengali ? 'ডিজিটাল আর্ট' : 'AI ART', value: 'AI ART' },
-    { label: isBengali ? 'সোশ্যাল রিলস' : 'SOCIAL REELS', value: 'SOCIAL' },
+    { label: bi('ALL WORK', 'সকল কাজ'), value: 'ALL' },
+    { label: bi('COMMERCIAL ADS', 'বিজ্ঞাপন ও কমার্শিয়াল'), value: 'ADS' },
+    { label: bi('AI MUSIC & SOUND', 'মিউজিক ও সাউন্ড'), value: 'MUSIC' },
+    { label: bi('CINEMATIC FILMS', 'সিনেমাটিক ভিডিও'), value: 'VIDEO' },
+    { label: bi('GRAPHICS & POSTERS', 'গ্রাফিক্স ও পোস্টার'), value: 'GRAPHICS' },
+    { label: bi('DIGITAL ART', 'ডিজিটাল আর্ট'), value: 'AI ART' },
+    { label: bi('SOCIAL REELS', 'সোশ্যাল রিলস'), value: 'SOCIAL' },
   ];
 
   const filteredProjects = selectedFilter === 'ALL'
@@ -32,39 +32,47 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
     : PORTFOLIO_PROJECTS.filter(p => p.category === selectedFilter);
 
   return (
-    <section id="work" className="py-24 border-b border-white/10 relative bg-[#09090c]">
+    <section id="work" className="py-20 sm:py-24 border-b border-white/10 relative bg-[#09090c]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 pb-6 border-b border-white/10 gap-6">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 sm:mb-12 pb-6 border-b border-white/10 gap-6">
           <div>
             <div className="flex items-center gap-2 text-xs font-mono-tech uppercase tracking-widest text-[#d4ff00] mb-3">
               <span className="w-1.5 h-1.5 bg-[#d4ff00] rounded-full" />
-              <span>{t.work.badge}</span>
+              <span>{bi('SELECTED PORTFOLIO', 'নির্বাচিত পোর্টফোলিও')}</span>
             </div>
-            <h2 className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white tracking-tight uppercase leading-none">
-              {isBengali ? (
+            <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-white tracking-tight uppercase leading-none">
+              {isMixed ? (
+                <>
+                  FEATURED <span className="text-[#ff007f]">PORTFOLIO</span>{' '}
+                  <span className="text-xl sm:text-2xl md:text-3xl text-neutral-400 font-normal block sm:inline mt-1 sm:mt-0">
+                    // নির্বাচিত কাজসমূহ
+                  </span>
+                </>
+              ) : isBengali ? (
                 <>
                   নির্বাচিত <span className="text-[#ff007f]">কাজসমূহ</span>
                 </>
               ) : (
                 <>
-                  SELECTED <span className="text-[#ff007f]">WORK</span>
+                  FEATURED <span className="text-[#ff007f]">PORTFOLIO</span>
                 </>
               )}
             </h2>
           </div>
           <div className="text-xs sm:text-sm font-mono-tech text-neutral-400 max-w-md">
-            {isBengali
-              ? 'মৌলিক চলচ্চিত্র ও সৃজনশীল বিজ্ঞাপনের কিউরেটেড সংগ্রহ। সম্পূর্ণ মোশন ও অ্যানালগ সাউন্ড উপভোগ করতে যেকোনো প্রজেক্টে ক্লিক করুন।'
-              : 'Asymmetrical editorial curation of original creative productions. Click any project to automatically play full 4K motion and synchronized spatial sound.'}
+            {bi(
+              'A curated catalog of cinematic films, commercial campaigns, sound design, and experimental visual art. Click any project to inspect full reels, storyline, and assets.',
+              'মৌলিক চলচ্চিত্র, বাণিজ্যিক ক্যাম্পেইন ও সাউন্ড ডিজাইনের কিউরেটেড পোর্টফোলিও। সম্পূর্ণ বিবরণ, রিল এবং স্টোরিলাইন দেখতে যেকোনো প্রজেক্টে ক্লিক করুন।'
+            )}
           </div>
         </div>
 
         {/* Filter Navigation Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-12 scrollbar-none">
-          <span className="text-xs font-mono-tech text-neutral-500 uppercase tracking-wider mr-2 shrink-0 flex items-center gap-1">
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-10 sm:mb-12 scrollbar-none">
+          <span className="text-xs font-mono-tech text-neutral-500 uppercase tracking-wider mr-1 sm:mr-2 shrink-0 flex items-center gap-1">
             <Filter className="w-3.5 h-3.5 text-[#d4ff00]" />
-            {isBengali ? 'ফিল্টার:' : 'FILTER:'}
+            {bi('FILTER:', 'ফিল্টার:')}
           </span>
           {filterCategories.map((tab) => (
             <button
@@ -74,7 +82,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
                 audioSynth.playSfx('click');
                 setSelectedFilter(tab.value);
               }}
-              className={`px-3.5 py-1.5 rounded-sm text-xs font-mono-tech uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-sm text-xs font-mono-tech uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
                 selectedFilter === tab.value
                   ? 'bg-[#d4ff00] text-black font-extrabold shadow-[0_0_12px_rgba(212,255,0,0.3)]'
                   : 'bg-neutral-900 border border-white/10 text-neutral-300 hover:text-white hover:border-white/30'

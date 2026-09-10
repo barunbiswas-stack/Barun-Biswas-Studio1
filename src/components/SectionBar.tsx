@@ -11,13 +11,10 @@ interface SectionItem {
 
 const SECTIONS: SectionItem[] = [
   { id: 'hero', label: 'DIRECTOR REEL // সূচনা', shortLabel: 'HERO', number: '01' },
-  { id: 'introduction', label: 'MANIFESTO // মূলনীতি', shortLabel: 'VISION', number: '02' },
-  { id: 'work', label: 'FEATURED WORK // কাজের সংগ্রহ', shortLabel: 'WORK', number: '03' },
+  { id: 'work', label: 'PORTFOLIO // কাজের সংগ্রহ', shortLabel: 'WORK', number: '02' },
+  { id: 'about', label: 'ABOUT DIRECTOR // পরিচয়', shortLabel: 'ABOUT', number: '03' },
   { id: 'services', label: 'SERVICES // সেবাসমূহ', shortLabel: 'SRV', number: '04' },
-  { id: 'process', label: 'CREATIVE PROCESS // কর্মপদ্ধতি', shortLabel: 'PROC', number: '05' },
-  { id: 'timeline', label: 'TIMELINE & STATS // পরিক্রমা', shortLabel: 'TIME', number: '06' },
-  { id: 'about', label: 'ABOUT THE DIRECTOR // পরিচয়', shortLabel: 'ABOUT', number: '07' },
-  { id: 'contact', label: 'INITIATE BRIEF // যোগাযোগ', shortLabel: 'TALK', number: '08' },
+  { id: 'contact', label: 'INITIATE BRIEF // যোগাযোগ', shortLabel: 'TALK', number: '05' },
 ];
 
 export const SectionBar: React.FC = () => {

@@ -141,11 +141,11 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">1</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'মূলনীতি / দর্শন' : 'Manifesto & Vision'}</span>
+                    <span className="text-neutral-300">{isBengali ? 'নির্বাচিত পোর্টফোলিও' : 'Featured Portfolio'}</span>
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">2</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'নির্বাচিত কাজসমূহ' : 'Featured Work Hub'}</span>
+                    <span className="text-neutral-300">{isBengali ? 'পরিচালক পরিচয় ও দর্শন' : 'About Director & Vision'}</span>
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">3</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
@@ -153,20 +153,8 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                     <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">4</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'কর্মপদ্ধতি ও ল্যাব' : 'Process & Creative Lab'}</span>
-                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">5</kbd>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'টাইমলাইন ও পরিসংখ্যান' : 'Timeline & Statistics'}</span>
-                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">6</kbd>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'পরিচালক পরিচয়' : 'About Director'}</span>
-                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">7</kbd>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded bg-white/[0.02] border border-white/5">
-                    <span className="text-neutral-300">{isBengali ? 'যোগাযোগ / ব্রিফ' : 'Contact / Brief'}</span>
-                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">8 / 0</kbd>
+                    <span className="text-neutral-300">{isBengali ? 'যোগাযোগ / ব্রিফ পাঠান' : 'Contact / Initiate Brief'}</span>
+                    <kbd className="px-2 py-0.5 rounded bg-neutral-900 border border-white/20 text-[#d4ff00]">5 / 0</kbd>
                   </div>
                 </div>
               </div>
